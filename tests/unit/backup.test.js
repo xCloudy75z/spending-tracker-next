@@ -88,3 +88,14 @@ test('unsupported top-level collections cannot be hidden by migration', () => {
   source.accounts = { hidden: true };
   assert.throws(() => inspectBackup(JSON.stringify(source), fixedOptions), /unsupported top-level collection/);
 });
+
+test('migration allowlists entity fields instead of retaining unknown metadata', () => {
+  const source = JSON.parse(originalText);
+  source.settings.privateDebug = 'remove me';
+  source.categories['cat-food'].privateDebug = 'remove me';
+  source.cycles['cycle-sep'].privateDebug = 'remove me';
+  source.transactions['txn-expense'].privateDebug = 'remove me';
+  source.wifePayments['wife-payment-1'].privateDebug = 'remove me';
+  const preview = inspectBackup(JSON.stringify(source), fixedOptions);
+  assert.equal(JSON.stringify(preview.candidate).includes('privateDebug'), false);
+});

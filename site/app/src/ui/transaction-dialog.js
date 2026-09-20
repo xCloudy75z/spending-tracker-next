@@ -28,7 +28,7 @@ function transactionDraft(form, current) {
     categoryId: String(data.get('categoryId') || ''),
     date: String(data.get('date') || ''),
     note: String(data.get('note') || '').slice(0, 500),
-    isRefund: data.get('kind') === 'refund',
+    kind: String(data.get('kind') || 'expense'),
     isCredit,
     creditSource: isCredit ? 'explicit' : null,
     liabilitySettled: current?.liabilitySettled || false,
@@ -69,13 +69,14 @@ export function openTransactionDialog(options) {
 
   const kind = el(documentLike, 'fieldset', { className: 'choice-field' });
   kind.append(el(documentLike, 'legend', { text: t(locale, 'transaction.type') }));
-  for (const [value, key] of [['expense', 'transaction.expense'], ['refund', 'transaction.income']]) {
+  for (const [value, key] of [['expense', 'transaction.expense'], ['income', 'transaction.income'], ['refund', 'transaction.refund']]) {
     const input = el(documentLike, 'input', {
       id: 'transaction-kind-' + value,
       type: 'radio',
       attrs: { name: 'kind', value },
     });
-    if ((value === 'refund') === Boolean(current?.isRefund)) input.checked = true;
+    const currentKind = current?.kind || (current?.isRefund ? 'refund' : 'expense');
+    if (value === currentKind) input.checked = true;
     const label = el(documentLike, 'label', { attrs: { for: input.id } }, [input, t(locale, key)]);
     kind.append(label);
   }
@@ -214,4 +215,3 @@ export function openTransactionDialog(options) {
   result.element = dialog;
   return result;
 }
-

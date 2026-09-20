@@ -23,7 +23,13 @@ test('break testing keeps the last control reachable above fixed navigation', as
   await page.goto('/app/');
   await page.locator('[data-route="plan"]').click();
   const control = page.locator('[data-backup-import]');
-  await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight));
+  await expect(page.locator('[data-view="plan"]')).toBeVisible();
+  await expect(control).toBeAttached();
+  await page.evaluate(() => window.scrollTo(0, document.scrollingElement.scrollHeight));
+  await expect.poll(() => page.evaluate(() => {
+    const root = document.scrollingElement;
+    return root.scrollHeight - root.clientHeight - root.scrollTop;
+  })).toBeLessThanOrEqual(1);
   const controlBox = await control.boundingBox();
   const navBox = await page.locator('.bottom-nav').boundingBox();
   expect(controlBox.y + controlBox.height).toBeLessThanOrEqual(navBox.y);

@@ -1,4 +1,5 @@
 import { addDays } from '../domain/dates.js';
+import { cycleForDate } from '../domain/cycles.js';
 import { formatDate, formatMoney, t } from '../i18n.js';
 import { el } from './dom.js';
 
@@ -7,7 +8,12 @@ function signedAmount(transaction) {
 }
 
 export function createPlanModel(state, todayISO, metadata = {}) {
-  const activeCycle = state.cycles?.[state.settings?.activeCycleId] || null;
+  let activeCycle = null;
+  try {
+    activeCycle = cycleForDate(state, todayISO);
+  } catch {
+    activeCycle = null;
+  }
   const activeTransactions = Object.values(state.transactions || {}).filter(item => item?.cycleId === activeCycle?.id);
   const categories = Object.values(state.categories || {})
     .filter(category => category && !category.isArchived)
@@ -44,11 +50,11 @@ function inputField(documentLike, id, label, type, attrs = {}) {
 }
 
 function dispatchForm(form, createCommand, onCommand) {
-  form.addEventListener('submit', event => {
+  form.addEventListener('submit', async event => {
     event.preventDefault();
     if (!form.reportValidity()) return;
-    onCommand?.(createCommand(new FormData(form)));
-    form.reset();
+    const result = await onCommand?.(createCommand(new FormData(form)));
+    if (result !== false) form.reset();
   });
 }
 
@@ -69,11 +75,11 @@ function openCategoryEditor(documentLike, locale, category, onCommand, trigger) 
   };
   cancel.addEventListener('click', close);
   dialog.addEventListener('cancel', event => { event.preventDefault(); close(); });
-  form.addEventListener('submit', event => {
+  form.addEventListener('submit', async event => {
     event.preventDefault();
     if (!form.reportValidity()) return;
-    onCommand?.({ type: 'category/update', payload: { id: category.id, patch: { name: name.input.value, budget: Number(budget.input.value) } } });
-    close();
+    const result = await onCommand?.({ type: 'category/update', payload: { id: category.id, patch: { name: name.input.value, budget: Number(budget.input.value) } } });
+    if (result !== false) close();
   });
   dialog.showModal();
   name.input.focus();
@@ -159,17 +165,23 @@ export function renderPlan(container, state, options = {}) {
     item.selected = state.settings.locale === value;
     language.append(item);
   }
-  language.addEventListener('change', () => options.onCommand?.({ type: 'settings/update', payload: { locale: language.value } }));
+  language.addEventListener('change', async () => {
+    if (await options.onCommand?.({ type: 'settings/update', payload: { locale: language.value } }) === false) language.value = state.settings.locale;
+  });
   const theme = el(documentLike, 'select', { attrs: { 'aria-label': t(locale, 'settings.theme'), 'data-setting-theme': '' } });
   for (const [value, key] of [['system', 'settings.themeSystem'], ['light', 'settings.themeLight'], ['dark', 'settings.themeDark']]) {
     const item = el(documentLike, 'option', { text: t(locale, key), attrs: { value } });
     item.selected = state.settings.theme === value;
     theme.append(item);
   }
-  theme.addEventListener('change', () => options.onCommand?.({ type: 'settings/update', payload: { theme: theme.value } }));
+  theme.addEventListener('change', async () => {
+    if (await options.onCommand?.({ type: 'settings/update', payload: { theme: theme.value } }) === false) theme.value = state.settings.theme;
+  });
   const wife = el(documentLike, 'input', { id: 'wife-setting', type: 'checkbox', attrs: { 'data-setting-wife': '' } });
   wife.checked = state.settings.wifeTracking;
-  wife.addEventListener('change', () => options.onCommand?.({ type: 'settings/wifeTracking', payload: { enabled: wife.checked } }));
+  wife.addEventListener('change', async () => {
+    if (await options.onCommand?.({ type: 'settings/wifeTracking', payload: { enabled: wife.checked } }) === false) wife.checked = state.settings.wifeTracking;
+  });
   settings.append(language, theme, el(documentLike, 'label', { className: 'check-field', attrs: { for: wife.id } }, [wife, t(locale, 'settings.wifeTracking')]));
   section.append(settings);
 

@@ -45,7 +45,7 @@ export function wifeSummary(state) {
   return {
     charged: money(charged),
     paid: money(paid),
-    balance: money(charged - settled - paid),
+    balance: Math.max(0, money(charged - settled - paid)),
     unsettledPurchases,
     settledPurchases,
     payments,
@@ -63,18 +63,26 @@ export function settleBankTransaction(state, id, settled, context = {}) {
 export function settleWifeTransaction(state, id, settled, context = {}) {
   if (!state.transactions?.[id]?.byWife) throw liabilityError('WIFE_ITEM_NOT_FOUND', 'Reimbursement transaction not found');
   const next = clone(state);
+  if (settled && !next.transactions[id].wifeSettled) {
+    const available = wifeSummary(next).balance;
+    const value = signedAmount(next.transactions[id]);
+    if (value > available) throw liabilityError('WIFE_SETTLEMENT_EXCEEDS_BALANCE', 'Settlement exceeds the outstanding reimbursement balance');
+  }
   next.transactions[id].wifeSettled = Boolean(settled);
   next.transactions[id].wifeSettledAt = settled ? (context.nowISO || new Date().toISOString()) : null;
   return next;
 }
 
 export function addWifePayment(state, draft, context = {}) {
+  const amount = money(Number(draft.amount));
+  if (!Number.isFinite(amount) || amount <= 0) throw liabilityError('WIFE_PAYMENT_INVALID', 'Payment must be a positive amount');
+  if (amount > wifeSummary(state).balance) throw liabilityError('WIFE_PAYMENT_EXCEEDS_BALANCE', 'Payment exceeds the outstanding reimbursement balance');
   const next = clone(state);
   const id = draft.id || (typeof context.idFactory === 'function' ? context.idFactory('wife-payment') : 'wife-payment-' + crypto.randomUUID());
   if (next.wifePayments[id]) throw liabilityError('DUPLICATE_ID', 'Payment id already exists');
   next.wifePayments[id] = {
     id,
-    amount: money(Number(draft.amount)),
+    amount,
     date: draft.date,
     note: String(draft.note || ''),
     createdAt: context.nowISO || new Date().toISOString(),

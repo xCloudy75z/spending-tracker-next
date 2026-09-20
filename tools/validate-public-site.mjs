@@ -114,6 +114,8 @@ export async function validatePublicSite(rootDir) {
     if (!evidenceHtml.includes(`data-version="${results.version}"`)) errors.push('evidence/index.html: version claim does not match results.json');
     if (!evidenceHtml.includes(`data-declarations="${results.declarationCount}"`)) errors.push('evidence/index.html: declaration claim does not match results.json');
     if (!evidenceHtml.includes(`data-executions="${results.executionCount}"`)) errors.push('evidence/index.html: execution claim does not match results.json');
+    if (!evidenceHtml.includes('data-audit-map')) errors.push('evidence/index.html: missing audit finding map');
+    if (!evidenceHtml.includes('href="https://github.com/xCloudy75z/spending-tracker-next"')) errors.push('evidence/index.html: missing repository source link');
   } catch (error) {
     errors.push(`evidence: missing or invalid machine-readable results (${error.message})`);
   }

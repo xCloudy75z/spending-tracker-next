@@ -64,8 +64,14 @@ export function openSmsDialog(options) {
         try { cycle = cycleForDate(state, row.dateISO); } catch { cycle = null; }
       }
       const article = el(documentLike, 'article', { className: 'sms-row sms-row--' + status, attrs: { 'data-sms-status': status } });
+      const statusKey = {
+        recognized: 'sms.recognized',
+        duplicate: 'sms.duplicate',
+        declined: 'sms.declined',
+        'out-of-cycle': 'sms.outOfCycle',
+      }[status] || 'sms.unrecognized';
       article.append(
-        el(documentLike, 'strong', { text: `${formatMoney(locale, row.amount)} — ${status}` }),
+        el(documentLike, 'strong', { text: `${formatMoney(locale, row.amount)} — ${t(locale, statusKey)}` }),
         el(documentLike, 'span', {}, text(documentLike, row.note)),
         el(documentLike, 'span', { text: `${row.dateISO || options.todayISO} · ${cycle?.id || t(locale, 'sms.outOfCycle')} · ${category.selectedOptions[0]?.text || ''}` }),
       );

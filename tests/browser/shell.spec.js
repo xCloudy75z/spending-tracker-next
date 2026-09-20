@@ -1,4 +1,7 @@
 import { test, expect } from '@playwright/test';
+import { readFile } from 'node:fs/promises';
+
+const original = await readFile(new URL('../fixtures/original-v1.json', import.meta.url));
 
 test('application shell is semantic and hash navigation follows browser history', async ({ page }) => {
   await page.goto('/app/');
@@ -53,4 +56,36 @@ test('storage denial shows recovery guidance and still permits backup inspection
   await expect(page.locator('[data-storage-error]')).toBeVisible();
   await expect(page.locator('input[type="file"][data-backup-inspect]')).toBeVisible();
   await expect(page.locator('[data-save-state]')).toHaveAttribute('aria-disabled', 'true');
+});
+
+test('corrupt storage can preview and restore a validated backup', async ({ page }) => {
+  await page.addInitScript(() => {
+    if (sessionStorage.getItem('corrupt-seeded')) return;
+    localStorage.setItem('spending-tracker-next:state:v1', '{broken');
+    sessionStorage.setItem('corrupt-seeded', 'true');
+  });
+  await page.goto('/app/');
+  await page.locator('[data-backup-inspect]').setInputFiles({ name: 'backup.json', mimeType: 'application/json', buffer: original });
+  await expect(page.locator('[data-storage-recovery-preview]')).toContainText('4 transactions');
+  await page.locator('[data-storage-recovery-restore]').click();
+  await expect(page.locator('[data-view="today"]')).toBeVisible();
+  const restored = await page.evaluate(() => JSON.parse(localStorage.getItem('spending-tracker-next:state:v1')));
+  expect(Object.keys(restored.transactions)).toHaveLength(4);
+});
+
+test('failed Plan persistence preserves form input and announces failure', async ({ page }) => {
+  await page.goto('/app/');
+  await page.locator('[data-route="plan"]').click();
+  await page.locator('#category-name').fill('Keep this value');
+  await page.locator('#category-budget').fill('100');
+  await page.evaluate(() => {
+    const originalSet = Storage.prototype.setItem;
+    Storage.prototype.setItem = function failWrites(key, value) {
+      if (String(key).startsWith('spending-tracker-next:')) throw new DOMException('full', 'QuotaExceededError');
+      return originalSet.call(this, key, value);
+    };
+  });
+  await page.locator('[data-category-add]').getByRole('button', { name: 'Add category' }).click();
+  await expect(page.locator('#category-name')).toHaveValue('Keep this value');
+  await expect(page.locator('[aria-live="assertive"]')).toContainText('Storage is full');
 });

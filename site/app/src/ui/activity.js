@@ -1,4 +1,5 @@
 import { formatDate, formatMoney, t } from '../i18n.js';
+import { cycleForDate } from '../domain/cycles.js';
 import { el, restoreFocus, text } from './dom.js';
 
 function normalizeSearch(value) {
@@ -15,8 +16,10 @@ function signedAmount(transaction) {
 
 function matchesType(transaction, type) {
   if (!type || type === 'all') return true;
-  if (type === 'expenses') return !transaction.isRefund;
-  if (type === 'refunds') return transaction.isRefund;
+  const kind = transaction.kind || (transaction.isRefund ? 'refund' : 'expense');
+  if (type === 'expenses') return kind === 'expense';
+  if (type === 'income') return kind === 'income';
+  if (type === 'refunds') return kind === 'refund';
   if (type === 'card') return transaction.isCredit;
   if (type === 'wife') return transaction.byWife;
   return true;
@@ -29,7 +32,7 @@ function transactionItem(state, transaction) {
   };
 }
 
-export function createActivityModel(state, filters = {}) {
+export function createActivityModel(state, filters = {}, todayISO = null) {
   const search = normalizeSearch(filters.search);
   const items = Object.values(state.transactions || {})
     .filter(Boolean)
@@ -43,10 +46,13 @@ export function createActivityModel(state, filters = {}) {
     })
     .sort((left, right) => String(right.date).localeCompare(String(left.date)) || String(right.id).localeCompare(String(left.id)));
 
-  const activeCycleId = state.settings?.activeCycleId;
+  let activeCycleId = state.settings?.activeCycleId;
+  if (todayISO) {
+    try { activeCycleId = cycleForDate(state, todayISO)?.id || null; } catch { activeCycleId = null; }
+  }
   const activeTransactions = Object.values(state.transactions || {}).filter(item => item?.cycleId === activeCycleId);
   const history = Object.values(state.cycles || {})
-    .filter(cycle => cycle && cycle.id !== activeCycleId)
+    .filter(cycle => cycle && cycle.id !== activeCycleId && (!todayISO || cycle.endDate < todayISO))
     .sort((left, right) => String(right.startDate).localeCompare(String(left.startDate)))
     .map(cycle => ({
       ...cycle,
@@ -102,7 +108,7 @@ export function renderActivity(container, state, options = {}) {
   const documentLike = container.ownerDocument;
   const locale = options.locale || state.settings?.locale || 'en';
   const filters = { ...(options.filters || {}) };
-  const model = createActivityModel(state, filters);
+  const model = createActivityModel(state, filters, options.todayISO);
   const section = el(documentLike, 'section', { className: 'workspace activity-view', attrs: { 'data-view': 'activity' } });
   section.append(el(documentLike, 'h1', { text: t(locale, 'activity.title') }));
 
@@ -112,6 +118,7 @@ export function renderActivity(container, state, options = {}) {
   type.append(
     option(documentLike, 'all', t(locale, 'activity.all'), model.filters.type),
     option(documentLike, 'expenses', t(locale, 'activity.expenses'), model.filters.type),
+    option(documentLike, 'income', t(locale, 'activity.income'), model.filters.type),
     option(documentLike, 'refunds', t(locale, 'activity.refunds'), model.filters.type),
     option(documentLike, 'card', t(locale, 'activity.card'), model.filters.type),
     option(documentLike, 'wife', t(locale, 'activity.wife'), model.filters.type),
@@ -123,7 +130,11 @@ export function renderActivity(container, state, options = {}) {
   cycle.append(option(documentLike, '', t(locale, 'activity.all'), model.filters.cycleId));
   for (const item of model.cycles) cycle.append(option(documentLike, item.id, `${item.startDate} — ${item.endDate}`, model.filters.cycleId));
   const apply = () => options.onFilters?.({ search: search.value, type: type.value, categoryId: category.value, cycleId: cycle.value });
-  search.addEventListener('input', apply);
+  let searchTimer = null;
+  search.addEventListener('input', () => {
+    clearTimeout(searchTimer);
+    searchTimer = setTimeout(apply, 150);
+  });
   type.addEventListener('change', apply);
   category.addEventListener('change', apply);
   cycle.addEventListener('change', apply);
@@ -147,7 +158,18 @@ export function renderActivity(container, state, options = {}) {
       }
       const row = el(documentLike, 'article', { className: 'transaction-row', attrs: { 'data-activity-id': item.id } });
       const copy = el(documentLike, 'div', { className: 'transaction-row__copy' });
-      copy.append(el(documentLike, 'strong', { text: item.categoryName }), el(documentLike, 'span', {}, text(documentLike, item.note || item.date)));
+      const kind = item.kind || (item.isRefund ? 'refund' : 'expense');
+      const detail = [
+        t(locale, `transaction.${kind}`),
+        item.isCredit ? t(locale, 'transaction.card') : t(locale, 'transaction.cash'),
+        item.byWife ? t(locale, 'activity.wife') : null,
+        item.source === 'sms' ? t(locale, 'activity.sourceSms') : t(locale, 'activity.sourceManual'),
+      ].filter(Boolean).join(' · ');
+      copy.append(
+        el(documentLike, 'strong', { text: item.categoryName }),
+        el(documentLike, 'span', {}, text(documentLike, item.note || item.date)),
+        el(documentLike, 'small', { text: detail }),
+      );
       const edit = el(documentLike, 'button', { className: 'button button-secondary', type: 'button', text: t(locale, 'common.edit') });
       const remove = el(documentLike, 'button', { className: 'button button-secondary', type: 'button', text: t(locale, 'common.delete') });
       edit.addEventListener('click', () => options.onEdit?.(item.id, edit));
@@ -167,4 +189,3 @@ export function renderActivity(container, state, options = {}) {
   container.replaceChildren(section);
   return section;
 }
-

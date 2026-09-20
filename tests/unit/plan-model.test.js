@@ -25,6 +25,19 @@ test('Plan derives category use and keeps unallocated allowance visible', () => 
   assert.equal(model.categories.find(item => item.id === 'food').isReferenced, true);
 });
 
+test('Plan derives the current cycle from today instead of a scheduled active id', () => {
+  const state = createEmptyState();
+  state.categories.food = { id: 'food', name: 'Food', icon: 'F', color: '#24766B', budget: 100, budgetPeriod: 'monthly', order: 0, isArchived: false };
+  state.cycles.current = { id: 'current', startDate: '2026-09-01', endDate: '2026-09-30', startBudget: 1000 };
+  state.cycles.future = { id: 'future', startDate: '2026-10-01', endDate: '2026-10-31', startBudget: 1200 };
+  state.settings.activeCycleId = 'future';
+  state.transactions.today = { id: 'today', cycleId: 'current', categoryId: 'food', date: '2026-09-20', amount: 25, isRefund: false };
+
+  const model = createPlanModel(state, '2026-09-20');
+  assert.equal(model.activeCycle.id, 'current');
+  assert.equal(model.categories[0].spent, 25);
+});
+
 test('Card keeps bank obligations and wife reimbursements independent', () => {
   const state = createEmptyState();
   state.transactions.bank = { id: 'bank', date: '2026-09-20', amount: 80, isRefund: false, isCredit: true, liabilitySettled: false, byWife: false, wifeSettled: false };
@@ -35,4 +48,3 @@ test('Card keeps bank obligations and wife reimbursements independent', () => {
   assert.equal(model.bank.outstanding, 110);
   assert.equal(model.wife.balance, 30);
 });
-

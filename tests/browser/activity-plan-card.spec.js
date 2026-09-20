@@ -67,6 +67,16 @@ test('Activity combines search and filters, preserves results after editing, and
   await expect(page.locator('[data-activity-id="lunch"]')).toHaveCount(0);
 });
 
+test('Activity keeps search focus and accepts real sequential typing', async ({ page }) => {
+  await seed(page);
+  await page.locator('[data-route="activity"]').click();
+  const search = page.getByLabel('Search');
+  await search.pressSequentially('cafe', { delay: 40 });
+  await expect(page.getByLabel('Search')).toBeFocused();
+  await expect(page.getByLabel('Search')).toHaveValue('cafe');
+  await expect(page.locator('[data-result-count]')).toHaveText('3');
+});
+
 test('Plan recovers from zero categories and cycles, then creates both', async ({ page }) => {
   await seed(page, emptyState());
   await page.locator('[data-route="plan"]').click();
@@ -101,7 +111,9 @@ test('Plan atomically reassigns a referenced category and rolls to a non-overlap
   await page.locator('[data-rollover]').getByRole('button', { name: 'Start next cycle' }).click();
   stored = await page.evaluate(() => JSON.parse(localStorage.getItem('spending-tracker-next:state:v1')));
   expect(Object.keys(stored.cycles)).toHaveLength(3);
-  expect(stored.cycles[stored.settings.activeCycleId].startDate).toBe('2026-10-01');
+  expect(stored.settings.activeCycleId).toBe('sep');
+  expect(stored.cycles.sep.archivedAt).toBeNull();
+  await expect(page.locator('.cycle-summary')).toContainText('Sep');
 });
 
 test('Card bank and wife settlements remain independent and wife mode normalizes safely', async ({ page }) => {

@@ -32,6 +32,14 @@ jobs:
         run: npm run browsers:install -- --with-deps
       - name: Run full release verification
         run: npm run verify
+      - name: Preserve the exact verified site
+        if: success() && github.event_name == 'push'
+        uses: actions/upload-artifact@v4
+        with:
+          name: verified-site
+          path: site
+          if-no-files-found: error
+          retention-days: 1
       - name: Upload verification reports on failure
         if: failure()
         uses: actions/upload-artifact@v4

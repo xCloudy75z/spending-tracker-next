@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { bankSummary, wifeSummary } from '../../site/app/src/domain/liabilities.js';
+import { addWifePayment, bankSummary, settleWifeTransaction, wifeSummary } from '../../site/app/src/domain/liabilities.js';
 import { createEmptyState } from '../../site/app/src/domain/model.js';
 
 function ledgerState() {
@@ -36,6 +36,20 @@ test('wife refunds, settlements, and payments reduce only wife balance', () => {
   };
   state.transactions.wife.wifeSettled = true;
   state.wifePayments.payment = { id: 'payment', date: '2026-09-05', amount: 10 };
-  assert.equal(wifeSummary(state).balance, -30);
+  assert.equal(wifeSummary(state).balance, 0);
   assert.equal(bankSummary(state).outstanding, 280);
+});
+
+test('wife payments and item settlement cannot double-count reimbursement', () => {
+  const state = ledgerState();
+  assert.throws(
+    () => addWifePayment(state, { amount: 121, date: '2026-09-20' }),
+    error => error.code === 'WIFE_PAYMENT_EXCEEDS_BALANCE',
+  );
+  const partiallyPaid = addWifePayment(state, { id: 'partial', amount: 40, date: '2026-09-20' });
+  assert.equal(wifeSummary(partiallyPaid).balance, 80);
+  assert.throws(
+    () => settleWifeTransaction(partiallyPaid, 'wife', true),
+    error => error.code === 'WIFE_SETTLEMENT_EXCEEDS_BALANCE',
+  );
 });

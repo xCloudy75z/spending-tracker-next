@@ -1,5 +1,6 @@
 import { createAppStore } from './app-store.js';
 import { createEmptyState } from './domain/model.js';
+import { inspectBackup, MAX_BACKUP_BYTES } from './domain/backup.js';
 import { t, setDocumentLocale } from './i18n.js';
 import { createClock } from './platform/clock.js';
 import { createStorage } from './platform/storage.js';
@@ -95,13 +96,21 @@ function renderDefaultView(documentLike, container, route, locale, todayISO, sta
   const dispatch = command => {
     try {
       store.dispatch(command);
+      return true;
     } catch (error) {
-      announce(documentLike, error?.code === 'CATEGORY_IN_USE' ? 'Choose a replacement category first.' : t(locale, 'error.unknown'), 'assertive');
+      const message = error?.code === 'CATEGORY_IN_USE'
+        ? t(locale, 'plan.categoryInUse')
+        : error?.code === 'STORAGE_WRITE_FAILED' && error?.reason === 'quota'
+          ? t(locale, 'error.storageFull')
+          : t(locale, 'error.unknown');
+      announce(documentLike, message, 'assertive');
+      return false;
     }
   };
   if (route === 'activity') {
     renderActivity(container, state, {
       locale,
+      todayISO,
       filters: uiState.activityFilters,
       onFilters(next) {
         uiState.activityFilters = next;
@@ -112,8 +121,7 @@ function renderDefaultView(documentLike, container, route, locale, todayISO, sta
       },
       async onDelete(id, trigger) {
         if (await confirmTransactionDelete(documentLike, locale, state.transactions[id], trigger)) {
-          dispatch({ type: 'transaction/delete', payload: { id } });
-          announce(documentLike, t(locale, 'transaction.deleted'));
+          if (dispatch({ type: 'transaction/delete', payload: { id } })) announce(documentLike, t(locale, 'transaction.deleted'));
         }
       },
     });
@@ -151,23 +159,57 @@ function updateNavigation(documentLike, route, locale) {
   }
 }
 
-function renderStorageError(documentLike, container, locale, status) {
+function renderStorageError(documentLike, container, locale, status, options = {}) {
   const section = el(documentLike, 'section', {
     className: 'storage-error',
     attrs: { 'data-storage-error': '', role: 'alert' },
   });
+  const file = el(documentLike, 'input', {
+    id: 'backup-inspect',
+    type: 'file',
+    attrs: { accept: 'application/json,.json', 'data-backup-inspect': '' },
+  });
+  const preview = el(documentLike, 'div', { attrs: { 'data-storage-recovery-preview': '', 'aria-live': 'polite' } });
+  const restore = el(documentLike, 'button', {
+    className: 'button button-primary', type: 'button', text: t(locale, 'backup.replace'),
+    attrs: { 'data-storage-recovery-restore': '', disabled: '' },
+  });
+  let inspected = null;
   section.append(
     el(documentLike, 'h1', { text: t(locale, 'app.name') }),
     el(documentLike, 'p', {
       text: status === 'corrupt' ? t(locale, 'error.invalidBackup') : t(locale, 'error.storageUnavailable'),
     }),
     el(documentLike, 'label', { text: t(locale, 'backup.import'), attrs: { for: 'backup-inspect' } }),
-    el(documentLike, 'input', {
-      id: 'backup-inspect',
-      type: 'file',
-      attrs: { accept: 'application/json,.json', 'data-backup-inspect': '' },
-    }),
+    file,
+    preview,
+    restore,
   );
+  file.addEventListener('change', async () => {
+    inspected = null;
+    restore.disabled = true;
+    const selected = file.files?.[0];
+    if (!selected || selected.size > MAX_BACKUP_BYTES) {
+      preview.textContent = t(locale, 'error.invalidBackup');
+      return;
+    }
+    try {
+      inspected = inspectBackup(await selected.text(), options.backupOptions || {});
+      preview.textContent = t(locale, 'backup.previewCounts', inspected.counts);
+      restore.disabled = false;
+    } catch {
+      preview.textContent = t(locale, 'error.invalidBackup');
+    }
+  });
+  restore.addEventListener('click', () => {
+    if (!inspected) return;
+    try {
+      options.storage.save(inspected.candidate);
+      options.window.location.reload();
+    } catch {
+      preview.textContent = t(locale, 'error.storageUnavailable');
+    }
+  });
   container.replaceChildren(section);
 }
 
@@ -187,7 +229,11 @@ export function mountApp(root, dependencies = {}) {
     setDocumentLocale(documentLike, locale);
     saveControl?.setAttribute('aria-disabled', 'true');
     if (saveControl) saveControl.disabled = true;
-    renderStorageError(documentLike, view, locale, loadResult.status);
+    renderStorageError(documentLike, view, locale, loadResult.status, {
+      storage,
+      window: windowLike,
+      backupOptions: dependencies.backupOptions,
+    });
     return { status: loadResult.status, destroy() {} };
   }
 

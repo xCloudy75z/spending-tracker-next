@@ -49,6 +49,7 @@ function normalizeTransaction(state, draft, context, current = null) {
   }
 
   const nowISO = context?.nowISO || new Date().toISOString();
+  const kind = draft.kind || current?.kind || (Boolean(draft.isRefund ?? current?.isRefund) ? 'refund' : 'expense');
   return {
     ...current,
     ...draft,
@@ -57,7 +58,8 @@ function normalizeTransaction(state, draft, context, current = null) {
     categoryId: draft.categoryId ?? current?.categoryId,
     date,
     amount: Math.round(Number(draft.amount ?? current?.amount) * 100) / 100,
-    isRefund: Boolean(draft.isRefund ?? current?.isRefund ?? false),
+    kind,
+    isRefund: kind === 'income' || kind === 'refund',
     isExcludedFromPace,
     exclusionSource,
     isCredit,
@@ -70,6 +72,7 @@ function normalizeTransaction(state, draft, context, current = null) {
     note: String(draft.note ?? current?.note ?? ''),
     createdAt: current?.createdAt || draft.createdAt || nowISO,
     updatedAt: nowISO,
+    source: draft.source ?? current?.source ?? 'manual',
   };
 }
 

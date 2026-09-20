@@ -55,7 +55,16 @@ export function migrateOriginalV1(input, options = {}) {
   const warnings = [];
   const state = {
     schemaVersion: 1,
-    settings: { ...settingsDefaults, ...(isRecord(source.settings) ? source.settings : {}) },
+    settings: {
+      currency: source.settings?.currency ?? settingsDefaults.currency,
+      salaryDay: source.settings?.salaryDay ?? settingsDefaults.salaryDay,
+      theme: source.settings?.theme ?? settingsDefaults.theme,
+      activeCycleId: source.settings?.activeCycleId ?? settingsDefaults.activeCycleId,
+      locale: source.settings?.locale ?? settingsDefaults.locale,
+      lastUsedCategoryId: source.settings?.lastUsedCategoryId ?? settingsDefaults.lastUsedCategoryId,
+      localTimestamps: source.settings?.localTimestamps ?? settingsDefaults.localTimestamps,
+      wifeTracking: source.settings?.wifeTracking ?? settingsDefaults.wifeTracking,
+    },
     categories: {},
     cycles: {},
     transactions: {},
@@ -71,7 +80,8 @@ export function migrateOriginalV1(input, options = {}) {
     const id = stableId(original.id, key, 'category', migrationOptions, warnings);
     categoryRemap.set(key, id);
     state.categories[key] = {
-      ...original, id,
+      id,
+      name: original.name,
       icon: original.icon ?? '•',
       color: original.color ?? '#6B7780',
       order: original.order ?? 0,
@@ -91,7 +101,10 @@ export function migrateOriginalV1(input, options = {}) {
     const id = stableId(original.id, key, 'cycle', migrationOptions, warnings);
     cycleRemap.set(key, id);
     state.cycles[key] = {
-      ...original, id,
+      id,
+      startDate: original.startDate,
+      endDate: original.endDate,
+      startBudget: original.startBudget,
       archivedAt: original.archivedAt ?? null,
       createdAt: original.createdAt ?? nowISO,
     };
@@ -105,12 +118,17 @@ export function migrateOriginalV1(input, options = {}) {
     const id = stableId(original.id, key, 'transaction', migrationOptions, warnings);
     const byWife = original.byWife ?? false;
     state.transactions[key] = {
-      ...original, id,
+      id,
       cycleId: cycleRemap.get(original.cycleId) || original.cycleId,
       categoryId: categoryRemap.get(original.categoryId) || original.categoryId,
-      isRefund: original.isRefund ?? false,
+      date: original.date,
+      amount: original.amount,
+      kind: original.kind || (original.isRefund ? 'refund' : 'expense'),
+      isRefund: original.kind ? original.kind !== 'expense' : (original.isRefund ?? false),
       isExcludedFromPace: byWife ? true : (original.isExcludedFromPace ?? false),
+      exclusionSource: byWife ? 'wife' : (original.exclusionSource ?? null),
       isCredit: byWife ? true : (original.isCredit ?? false),
+      creditSource: byWife ? (original.creditSource ?? 'wife') : (original.creditSource ?? null),
       liabilitySettled: original.liabilitySettled ?? false,
       settledAt: original.settledAt ?? null,
       byWife,
@@ -119,6 +137,7 @@ export function migrateOriginalV1(input, options = {}) {
       note: original.note ?? '',
       createdAt: original.createdAt ?? nowISO,
       updatedAt: original.updatedAt ?? original.createdAt ?? nowISO,
+      source: original.source ?? null,
     };
   }
 
@@ -129,7 +148,9 @@ export function migrateOriginalV1(input, options = {}) {
     }
     const id = stableId(original.id, key, 'wife-payment', migrationOptions, warnings);
     state.wifePayments[key] = {
-      ...original, id,
+      id,
+      amount: original.amount,
+      date: original.date,
       note: original.note ?? '',
       createdAt: original.createdAt ?? nowISO,
     };

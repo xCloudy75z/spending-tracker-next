@@ -31,8 +31,16 @@ test('Activity combines type, category, and cycle filters', () => {
 });
 
 test('archived cycle totals stay separate from the active cycle total', () => {
-  const model = createActivityModel(activityState(), {});
+  const model = createActivityModel(activityState(), {}, '2026-09-20');
   assert.equal(model.currentCycleTotal, 40);
   assert.deepEqual(model.history.map(cycle => ({ id: cycle.id, spent: cycle.spent })), [{ id: 'old', spent: 400 }]);
 });
 
+test('Activity derives its current cycle from today when a future cycle is scheduled', () => {
+  const state = activityState();
+  state.cycles.future = { id: 'future', startDate: '2026-10-01', endDate: '2026-10-31', startBudget: 2200 };
+  state.settings.activeCycleId = 'future';
+  const model = createActivityModel(state, {}, '2026-09-20');
+  assert.equal(model.currentCycleTotal, 40);
+  assert.deepEqual(model.history.map(cycle => cycle.id), ['old']);
+});

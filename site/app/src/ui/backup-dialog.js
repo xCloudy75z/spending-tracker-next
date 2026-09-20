@@ -47,7 +47,6 @@ export function openBackupDialog(options) {
   });
   exportCsv.addEventListener('click', () => {
     downloadCsv(options.getState(), options.todayISO, options.downloadOptions);
-    markBackup();
     announce(documentLike, t(locale, 'backup.success'));
   });
   sms.addEventListener('click', () => {
@@ -88,7 +87,11 @@ export function openBackupDialog(options) {
       await options.store.commitRestore(inspected);
       markBackup();
       busy = false;
-      announce(documentLike, t(locale, 'backup.restoreSuccess'));
+      announce(documentLike, t(locale, 'backup.restoreSuccessCounts', {
+        transactions: inspected.counts.transactions,
+        categories: inspected.counts.categories,
+        cycles: inspected.counts.cycles,
+      }));
       finish();
     } catch {
       busy = false;
@@ -101,4 +104,3 @@ export function openBackupDialog(options) {
   exportJson.focus();
   return dialog;
 }
-

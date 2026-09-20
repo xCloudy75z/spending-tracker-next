@@ -41,8 +41,18 @@
         </tbody></table></div>
         <h2>Offline verification detail</h2>
         <p>A cold offline reload is exercised in desktop Chromium after a successful online visit. On Windows, Playwright’s WebKit engine does not provide the same context-level offline switch; the WebKit runs instead verify the cached shell and modules, service-worker registration, offline event handling, and every application route. This limitation is stated here so the evidence is not stronger than the test.</p>
+        <h2>Audit finding map</h2>
+        <div class="table-wrap" data-audit-map><table><thead><tr><th>Finding</th><th>Remedy</th><th>Proof</th></tr></thead><tbody>
+          <tr><td>Daily guidance could disagree across screens</td><td>One date-aware cycle and safe-to-spend derivation feeds Today, Plan, and Activity.</td><td>Cycle, Today-model, rollover, and browser navigation tests.</td></tr>
+          <tr><td>Local data could be lost or partially restored</td><td>Writes roll back on failure, a snapshot can recover corruption, and restore replaces data only after full validation and preview.</td><td>Storage, backup, restore-transaction, corrupt-storage, and import/export tests.</td></tr>
+          <tr><td>Card and reimbursement totals could be coupled</td><td>Bank liability and wife reimbursement ledgers are calculated independently; overpayment and double settlement are rejected.</td><td>Liability unit tests and Card browser journeys.</td></tr>
+          <tr><td>Imported content could become executable or unsafe in spreadsheets</td><td>UI text nodes never inject HTML, CSP blocks external runtime code, and CSV neutralizes formulas.</td><td>DOM primitive, backup adversarial, CSV, and CSP validation tests.</td></tr>
+          <tr><td>Offline updates could damage another app on the same origin</td><td>The worker is scoped to <code>/app/</code> and deletes only caches with its own product prefix.</td><td>PWA unit/browser isolation test and desktop cold-offline reload.</td></tr>
+          <tr><td>Mobile, Arabic, keyboard, and assistive use were unproven</td><td>Responsive layouts, RTL, focus restoration, touch targets, and reduced motion are part of the release suite.</td><td>Desktop Chromium plus iPhone WebKit portrait/landscape and axe scans.</td></tr>
+          <tr><td>Published claims could drift from tested code</td><td>Native and browser reporters generate the evidence JSON; Pages deploys that exact successful Quality artifact.</td><td>Accounting regressions, site validator, and trusted-workflow tests.</td></tr>
+        </tbody></table></div>
         <h2>Reproduce it</h2>
-        <p>Install the development dependencies, then run <code>npm run verify:full</code>. The source suite and configuration are included in the repository. The structured record behind this page is available as <a href="./results.json">results.json</a>.</p>
+        <p>Install the development dependencies, then run <code>npm run verify:full</code>. Review the <a href="https://github.com/xCloudy75z/spending-tracker-next">repository source and tests</a>, or inspect the structured record behind this page in <a href="./results.json">results.json</a>.</p>
       </section>
     </main>
     <footer class="site-footer shell"><p>Spending Tracker · Verified build 1.0.0</p><nav aria-label="Footer navigation"><a href="../releases/">Releases</a><a href="../privacy/">Privacy</a><a href="../app/">Open app</a></nav></footer>

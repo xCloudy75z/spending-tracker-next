@@ -39,6 +39,15 @@ test('backup and CSV downloads use deterministic safe files', async ({ page }) =
   expect(content).toContain("'=SUM(A1:A2)");
 });
 
+test('CSV export never marks a restorable backup as current', async ({ page }) => {
+  await seed(page);
+  const download = page.waitForEvent('download');
+  await page.locator('[data-export-csv]').click();
+  await download;
+  const metadata = await page.evaluate(() => JSON.parse(localStorage.getItem('spending-tracker-next:meta:v1') || '{}'));
+  expect(metadata.lastBackupAt).toBeUndefined();
+});
+
 test('backup preview never mutates data and original V1 restore requires explicit replacement', async ({ page }) => {
   await seed(page);
   await page.locator('[data-backup-file]').setInputFiles({ name: 'original.json', mimeType: 'application/json', buffer: original });
@@ -64,4 +73,3 @@ test('corrupt, hostile, and oversized backups are refused without state mutation
   }
   expect(await page.evaluate(() => Object.keys(JSON.parse(localStorage.getItem('spending-tracker-next:state:v1')).transactions).length)).toBe(1);
 });
-

@@ -10,8 +10,8 @@ Spending Tracker is a private, offline-first progressive web app for answering o
 
 - Calculates a cycle-aware daily safe-to-spend amount.
 - Captures, edits, filters, and deletes income and spending.
-- Plans income, fixed commitments, savings, categories, and cycles.
-- Tracks credit-card balances, due dates, payments, and wife reimbursements independently.
+- Plans a spendable cycle allowance, dates, category budgets, and the next rollover.
+- Tracks outstanding card purchases, payment status, and wife reimbursements independently.
 - Reviews pasted bank SMS text before importing recognized transactions.
 - Switches between English and Arabic with a genuine right-to-left layout.
 - Exports a complete JSON backup and a spreadsheet-friendly CSV.
@@ -72,6 +72,7 @@ The gate validates the static site, runs 60 unit tests, 10 integration tests, 6 
 
 - The durable-storage target is a normal current Safari session; private browsing is unsuitable.
 - There is no cloud sync, multi-device merge, password, or app-level encryption.
+- Enter the cycle allowance after setting aside fixed commitments and savings; the app does not model bank balances, recurring bills, credit limits, statement dates, or due dates.
 - Automatic SMS inbox access is not available in a web app; the user pastes message text for review.
 - Desktop cold-offline reload is exercised directly. Windows Playwright WebKit cannot toggle context networking, so iPhone-emulation tests instead verify cached resources, service-worker registration, offline events, and route availability.
 - An invalid backup is rejected; a valid restore intentionally replaces the current local state after preview.

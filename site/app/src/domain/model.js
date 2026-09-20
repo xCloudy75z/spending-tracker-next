@@ -26,6 +26,10 @@ function validOptionalText(value, maxLength) {
   return value == null || (typeof value === 'string' && value.length <= maxLength && !CONTROL_PATTERN.test(value));
 }
 
+function validOptionalInstant(value) {
+  return value == null || (typeof value === 'string' && value.length <= 64 && Number.isFinite(Date.parse(value)));
+}
+
 function validMoney(value, allowZero = false) {
   return typeof value === 'number'
     && Number.isFinite(value)
@@ -138,6 +142,7 @@ export function validateState(state) {
       if (typeof category.isArchived !== 'boolean') addIssue(issues, path + '.isArchived', 'must be boolean');
       if (!validMoney(category.budget, true)) addIssue(issues, path + '.budget', 'must be a finite amount from 0 to 999999999.99');
       if (!['monthly', 'yearly'].includes(category.budgetPeriod)) addIssue(issues, path + '.budgetPeriod', 'must be monthly or yearly');
+      if (!validOptionalInstant(category.createdAt)) addIssue(issues, path + '.createdAt', 'must be null or an ISO timestamp');
     }
   }
 
@@ -157,6 +162,8 @@ export function validateState(state) {
         addIssue(issues, path + '.endDate', 'must not be before startDate');
       }
       if (!validMoney(cycle.startBudget)) addIssue(issues, path + '.startBudget', 'must be a finite positive amount');
+      if (!validOptionalInstant(cycle.archivedAt)) addIssue(issues, path + '.archivedAt', 'must be null or an ISO timestamp');
+      if (!validOptionalInstant(cycle.createdAt)) addIssue(issues, path + '.createdAt', 'must be null or an ISO timestamp');
       cycleList.push({ key, cycle });
     }
   }
@@ -189,7 +196,19 @@ export function validateState(state) {
         addIssue(issues, path + '.date', 'must fall within its cycle');
       }
       if (!validMoney(transaction.amount)) addIssue(issues, path + '.amount', 'must be a finite positive amount');
+      if (transaction.kind !== undefined && !['expense', 'income', 'refund'].includes(transaction.kind)) {
+        addIssue(issues, path + '.kind', 'must be expense, income, or refund');
+      }
+      if (transaction.kind !== undefined && transaction.isRefund !== (transaction.kind !== 'expense')) {
+        addIssue(issues, path + '.isRefund', 'must match transaction kind');
+      }
       if (!validOptionalText(transaction.note ?? '', 500)) addIssue(issues, path + '.note', 'must be at most 500 safe characters');
+      if (![null, 'wife'].includes(transaction.exclusionSource ?? null)) addIssue(issues, path + '.exclusionSource', 'must be null or wife');
+      if (![null, 'explicit', 'wife'].includes(transaction.creditSource ?? null)) addIssue(issues, path + '.creditSource', 'must be null, explicit, or wife');
+      if (![null, 'sms', 'manual'].includes(transaction.source ?? null)) addIssue(issues, path + '.source', 'must be null, sms, or manual');
+      for (const timestamp of ['settledAt', 'wifeSettledAt', 'createdAt', 'updatedAt']) {
+        if (!validOptionalInstant(transaction[timestamp])) addIssue(issues, path + '.' + timestamp, 'must be null or an ISO timestamp');
+      }
       for (const flag of ['isRefund', 'isExcludedFromPace', 'isCredit', 'liabilitySettled', 'byWife', 'wifeSettled']) {
         if (typeof transaction[flag] !== 'boolean') addIssue(issues, path + '.' + flag, 'must be boolean');
       }
@@ -211,6 +230,7 @@ export function validateState(state) {
       if (!validMoney(payment.amount)) addIssue(issues, path + '.amount', 'must be a finite positive amount');
       if (!isValidISODate(payment.date)) addIssue(issues, path + '.date', 'must be a valid ISO date');
       if (!validOptionalText(payment.note ?? '', 500)) addIssue(issues, path + '.note', 'must be at most 500 safe characters');
+      if (!validOptionalInstant(payment.createdAt)) addIssue(issues, path + '.createdAt', 'must be null or an ISO timestamp');
     }
   }
 

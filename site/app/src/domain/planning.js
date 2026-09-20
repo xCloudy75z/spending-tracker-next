@@ -85,9 +85,12 @@ export function addCycle(state, draft, context = {}) {
     archivedAt: null,
     createdAt: nowISO,
   };
-  const previousId = next.settings.activeCycleId;
-  if (previousId && next.cycles[previousId]) next.cycles[previousId].archivedAt = nowISO;
-  next.settings.activeCycleId = id;
+  const todayISO = draft.todayISO || context.todayISO || nowISO.slice(0, 10);
+  if (draft.startDate <= todayISO && todayISO <= draft.endDate) {
+    const previousId = next.settings.activeCycleId;
+    if (previousId && previousId !== id && next.cycles[previousId]) next.cycles[previousId].archivedAt = nowISO;
+    next.settings.activeCycleId = id;
+  }
   assertValid(next);
   return next;
 }
@@ -100,4 +103,3 @@ export function updateSettings(state, patch) {
   assertValid(next);
   return next;
 }
-

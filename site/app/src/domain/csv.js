@@ -28,10 +28,12 @@ export function exportTransactionsCsv(state) {
   const rows = [HEADERS.map(header => quote(header)).join(',')];
   for (const transaction of transactions) {
     const category = state.categories?.[transaction.categoryId];
-    const signedAmount = transaction.isRefund ? -Number(transaction.amount) : Number(transaction.amount);
+    const kind = transaction.kind || (transaction.isRefund ? 'refund' : 'expense');
+    const signedAmount = kind === 'expense' ? Number(transaction.amount) : -Number(transaction.amount);
+    const label = { expense: 'Expense', income: 'Income', refund: 'Refund' }[kind] || 'Expense';
     rows.push([
       quote(transaction.date, false),
-      quote(transaction.isRefund ? 'Refund' : 'Expense'),
+      quote(label),
       quote(signedAmount.toFixed(2), false),
       quote(category?.name || 'Unknown category'),
       quote(transaction.note || ''),

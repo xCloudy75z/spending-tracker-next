@@ -39,3 +39,13 @@ test('CSV has deterministic columns and transaction order', () => {
   assert.match(lines[1], /^"2026-09-01","Refund","-10\.00"/);
   assert.match(lines[2], /^"2026-09-02","Expense","20\.00"/);
 });
+
+test('CSV preserves distinct expense, income, and refund semantics', () => {
+  const state = csvStateWithNotes('safe');
+  state.transactions.first.kind = 'refund';
+  state.transactions.income = { ...state.transactions.first, id: 'income', date: '2026-09-03', kind: 'income', amount: 100 };
+  const csv = exportTransactionsCsv(state);
+  assert.match(csv, /"2026-09-01","Refund","-10\.00"/);
+  assert.match(csv, /"2026-09-02","Expense","20\.00"/);
+  assert.match(csv, /"2026-09-03","Income","-100\.00"/);
+});

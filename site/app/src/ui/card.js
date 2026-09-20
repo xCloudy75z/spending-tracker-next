@@ -17,7 +17,7 @@ function ledgerRow(documentLike, locale, transaction, actionLabel, onAction, kin
     el(documentLike, 'span', {}, text(documentLike, transaction.note || formatDate(locale, transaction.date))),
   );
   const action = el(documentLike, 'button', { className: 'button button-secondary', type: 'button', text: actionLabel });
-  action.addEventListener('click', () => onAction?.(transaction.id));
+  action.addEventListener('click', async () => { await onAction?.(transaction.id); });
   row.append(copy, action);
   return row;
 }
@@ -64,15 +64,17 @@ export function renderCard(container, state, options = {}) {
       wife.append(history);
     }
     const paymentForm = el(documentLike, 'form', { className: 'inline-form', attrs: { 'data-wife-payment': '' } });
-    const amount = el(documentLike, 'input', { id: 'wife-payment-amount', type: 'number', attrs: { name: 'amount', min: '0.01', step: '0.01', inputmode: 'decimal', required: '', 'aria-label': t(locale, 'transaction.amount') } });
+    const amount = el(documentLike, 'input', { id: 'wife-payment-amount', type: 'number', attrs: { name: 'amount', min: '0.01', max: String(model.wife.balance), step: '0.01', inputmode: 'decimal', required: '', 'aria-label': t(locale, 'transaction.amount') } });
     const date = el(documentLike, 'input', { id: 'wife-payment-date', type: 'date', attrs: { name: 'date', value: options.todayISO, required: '', 'aria-label': t(locale, 'transaction.date') } });
     paymentForm.append(amount, date, el(documentLike, 'button', { className: 'button button-secondary', type: 'submit', text: t(locale, 'card.recordPayment') }));
-    paymentForm.addEventListener('submit', event => {
+    paymentForm.addEventListener('submit', async event => {
       event.preventDefault();
       if (!paymentForm.reportValidity()) return;
-      options.onCommand?.({ type: 'wife/payment', payload: { amount: Number(amount.value), date: date.value, note: '' } });
-      paymentForm.reset();
-      date.value = options.todayISO;
+      const result = await options.onCommand?.({ type: 'wife/payment', payload: { amount: Number(amount.value), date: date.value, note: '' } });
+      if (result !== false) {
+        paymentForm.reset();
+        date.value = options.todayISO;
+      }
     });
     wife.append(paymentForm);
     section.append(wife);

@@ -106,3 +106,22 @@ test('editing changes amount, category, and date while enforcing the 500-charact
   expect(Object.values(stored.transactions)[0].note).toHaveLength(500);
 });
 
+test('income and refunds remain distinct transaction types after save and edit', async ({ page }) => {
+  await seed(page);
+  await page.locator('[data-add-transaction]').click();
+  await page.locator('#transaction-amount').fill('500');
+  await page.locator('#transaction-category').selectOption('food');
+  await page.locator('#transaction-kind-income').check();
+  await page.locator('[data-transaction-save]').click();
+
+  let stored = await page.evaluate(() => JSON.parse(localStorage.getItem('spending-tracker-next:state:v1')));
+  const transaction = Object.values(stored.transactions)[0];
+  expect(transaction).toMatchObject({ kind: 'income', isRefund: true, source: 'manual' });
+
+  await page.locator('[data-transaction-id]').click();
+  await expect(page.locator('#transaction-kind-income')).toBeChecked();
+  await page.locator('#transaction-kind-refund').check();
+  await page.locator('[data-transaction-save]').click();
+  stored = await page.evaluate(() => JSON.parse(localStorage.getItem('spending-tracker-next:state:v1')));
+  expect(Object.values(stored.transactions)[0]).toMatchObject({ kind: 'refund', isRefund: true });
+});
