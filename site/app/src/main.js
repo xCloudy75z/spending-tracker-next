@@ -10,6 +10,8 @@ import { openTransactionDialog } from './ui/transaction-dialog.js';
 import { confirmTransactionDelete, renderActivity } from './ui/activity.js';
 import { renderPlan } from './ui/plan.js';
 import { renderCard } from './ui/card.js';
+import { openBackupDialog } from './ui/backup-dialog.js';
+import { openSmsDialog } from './ui/sms-dialog.js';
 
 export function createLifecycleController(options) {
   const eventTarget = options.eventTarget;
@@ -117,7 +119,7 @@ function renderDefaultView(documentLike, container, route, locale, todayISO, sta
     return;
   }
   if (route === 'plan') {
-    renderPlan(container, state, { locale, todayISO, metadata, onCommand: dispatch });
+    renderPlan(container, state, { locale, todayISO, metadata, onCommand: dispatch, onBackup: () => uiState.openDataTools?.() });
     return;
   }
   if (route === 'card') {
@@ -174,7 +176,7 @@ export function mountApp(root, dependencies = {}) {
   const clock = dependencies.clock || createClock();
   const storage = dependencies.storage || createStorage(windowLike.localStorage);
   const loadResult = storage.load();
-  const metadata = typeof storage.metadata === 'function' ? storage.metadata() : {};
+  let metadata = typeof storage.metadata === 'function' ? storage.metadata() : {};
   root.dataset.storeStatus = loadResult.status;
   const view = documentLike.querySelector('#view');
   const saveControl = documentLike.querySelector('[data-save-state]');
@@ -210,6 +212,32 @@ export function mountApp(root, dependencies = {}) {
     updateNavigation(documentLike, route, locale);
     (dependencies.renderView || renderDefaultView)(documentLike, view, route, locale, todayISO, state, store, metadata, uiState, render);
   };
+
+  const openSms = trigger => openSmsDialog({
+    document: documentLike,
+    state: store.getState(),
+    locale,
+    todayISO,
+    trigger,
+    onSubmit(command) { store.dispatch(command); },
+  });
+  const openDataTools = trigger => openBackupDialog({
+    document: documentLike,
+    locale,
+    todayISO,
+    trigger: trigger || saveControl,
+    store,
+    storage,
+    getState: () => store.getState(),
+    onMetadataChange() {
+      metadata = storage.metadata();
+      render();
+    },
+    onOpenSms: openSms,
+  });
+  uiState.openDataTools = openDataTools;
+  const onSaveControl = () => openDataTools(saveControl);
+  saveControl?.addEventListener('click', onSaveControl);
 
   const router = createRouter(windowLike, nextRoute => {
     route = nextRoute;
@@ -247,6 +275,7 @@ export function mountApp(root, dependencies = {}) {
       unsubscribe();
       router.stop();
       lifecycle.stop();
+      saveControl?.removeEventListener('click', onSaveControl);
     },
   };
 }

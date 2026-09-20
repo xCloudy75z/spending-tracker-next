@@ -106,5 +106,17 @@ export function createStorage(adapter, options = {}) {
         return {};
       }
     },
+    markBackup(timestamp = nowISO()) {
+      let metadata = {};
+      try {
+        const raw = adapter.getItem(META_KEY);
+        metadata = raw ? JSON.parse(raw) : {};
+        metadata.lastBackupAt = timestamp;
+        adapter.setItem(META_KEY, JSON.stringify(metadata));
+        return structuredClone(metadata);
+      } catch (error) {
+        throw typedWriteError(error);
+      }
+    },
   };
 }

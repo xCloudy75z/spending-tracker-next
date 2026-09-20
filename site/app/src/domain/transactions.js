@@ -82,6 +82,13 @@ export function addTransaction(state, draft, context = {}) {
   return next;
 }
 
+export function addTransactions(state, drafts, context = {}) {
+  if (!Array.isArray(drafts) || drafts.length === 0) throw commandError('EMPTY_BATCH', 'Transaction batch is empty');
+  let next = clone(state);
+  for (const draft of drafts) next = addTransaction(next, draft, context);
+  return next;
+}
+
 export function updateTransaction(state, id, patch, context = {}) {
   if (!state.transactions?.[id]) throw commandError('NOT_FOUND', 'Transaction not found');
   const next = clone(state);

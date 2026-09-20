@@ -723,6 +723,51 @@ button,
 
 .form-error[hidden] { display: none; }
 
+.data-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-block: 1rem;
+}
+
+.backup-dialog input[type="file"],
+.sms-dialog textarea,
+.sms-dialog select {
+  inline-size: 100%;
+  min-block-size: 44px;
+  border: 1px solid var(--rule);
+  border-radius: 0.55rem;
+  background: var(--paper);
+  color: var(--ink);
+  padding: 0.65rem;
+}
+
+.backup-preview,
+.sms-results {
+  display: grid;
+  gap: 0.5rem;
+  margin-block: 1rem;
+}
+
+.sms-row {
+  display: grid;
+  border-inline-start: 4px solid var(--tide);
+  background: var(--paper);
+  padding: 0.6rem 0.75rem;
+}
+
+.sms-row span {
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+.sms-row--declined,
+.sms-row--invalid-date,
+.sms-row--out-of-cycle { border-color: var(--signal); }
+
+.sms-row--duplicate,
+.sms-row--unrecognized { border-color: var(--amber); }
+
 @media (max-width: 36rem) {
   .app-dialog {
     inline-size: calc(100% - 1rem - var(--safe-left) - var(--safe-right));

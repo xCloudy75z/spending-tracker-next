@@ -1,6 +1,7 @@
 import { inspectBackup } from './domain/backup.js';
 import {
   addTransaction,
+  addTransactions,
   deleteTransaction,
   reassignCategory,
   setWifeTracking,
@@ -23,6 +24,8 @@ function reduce(state, command, context) {
   switch (command.type) {
     case 'transaction/add':
       return addTransaction(state, command.payload, context);
+    case 'transaction/batchAdd':
+      return addTransactions(state, command.payload.transactions, context);
     case 'transaction/update':
       return updateTransaction(state, command.payload.id, command.payload.patch, context);
     case 'transaction/delete':
