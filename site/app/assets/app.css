@@ -162,6 +162,147 @@ body {
   font-variant-numeric: tabular-nums;
 }
 
+.today-view {
+  max-inline-size: 40rem;
+}
+
+.today-hero {
+  padding-block: clamp(0.5rem, 3vw, 1.5rem) 1rem;
+  border-block-end: 1px solid var(--rule);
+}
+
+.eyebrow {
+  margin: 0 0 0.35rem;
+  color: var(--muted);
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.today-hero h1 {
+  margin: 0;
+  color: var(--muted);
+  font-size: clamp(1rem, 3vw, 1.15rem);
+  font-weight: 650;
+}
+
+.hero-amount {
+  margin: 0.15rem 0 0;
+  color: var(--tide-strong);
+  font-size: clamp(2.7rem, 11vw, 5rem);
+  font-variant-numeric: tabular-nums lining-nums;
+  font-weight: 760;
+  letter-spacing: -0.065em;
+  line-height: 1;
+}
+
+.hero-amount.is-negative {
+  color: var(--signal);
+}
+
+.today-facts {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1px;
+  margin-block: 1rem;
+  background: var(--rule);
+  border: 1px solid var(--rule);
+}
+
+.today-fact {
+  display: grid;
+  gap: 0.2rem;
+  background: var(--surface);
+  padding: 0.85rem;
+}
+
+.today-fact span {
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+
+.today-fact strong {
+  font-variant-numeric: tabular-nums lining-nums;
+}
+
+.pace-line {
+  border-inline-start: 4px solid var(--tide);
+  margin-block: 1rem;
+  padding: 0.55rem 0.75rem;
+}
+
+.pace-line--watch { border-color: var(--amber); }
+.pace-line--over { border-color: var(--signal); }
+
+.backup-warning {
+  display: block;
+  color: var(--amber);
+  margin-block: 1rem;
+}
+
+.add-transaction {
+  inline-size: 100%;
+  margin-block: 0.5rem 1.75rem;
+  font-weight: 750;
+}
+
+.recent-activity h2 {
+  margin: 0 0 0.5rem;
+  font-size: 1.15rem;
+}
+
+.activity-list {
+  border-block-start: 1px solid var(--rule);
+}
+
+.activity-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  inline-size: 100%;
+  border: 0;
+  border-block-end: 1px solid var(--rule);
+  border-radius: 0;
+  background: transparent;
+  color: var(--ink);
+  padding: 0.8rem 0;
+  text-align: start;
+}
+
+.activity-row__main {
+  display: grid;
+  min-inline-size: 0;
+}
+
+.activity-row__note {
+  overflow: hidden;
+  color: var(--muted);
+  font-size: 0.85rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.activity-row__amount {
+  flex: none;
+  font-variant-numeric: tabular-nums lining-nums;
+  font-weight: 700;
+}
+
+.activity-row__amount.is-refund { color: var(--tide-strong); }
+
+.empty-state {
+  border-inline-start: 4px solid var(--amber);
+  padding-inline-start: 1rem;
+}
+
+.empty-state .button {
+  display: inline-flex;
+  align-items: center;
+  text-decoration: none;
+}
+
 .bottom-nav {
   position: fixed;
   z-index: 20;
@@ -310,6 +451,84 @@ button,
   gap: 0.75rem;
   margin-block-start: 1.5rem;
 }
+
+.transaction-form,
+.form-field {
+  display: grid;
+  gap: 0.4rem;
+}
+
+.transaction-form {
+  gap: 1rem;
+  margin-block-start: 1rem;
+}
+
+.form-label,
+.choice-field legend {
+  font-size: 0.85rem;
+  font-weight: 720;
+}
+
+.form-field input,
+.form-field select,
+.form-field textarea {
+  inline-size: 100%;
+  min-block-size: 44px;
+  border: 1px solid var(--rule);
+  border-radius: 0.55rem;
+  background: var(--paper);
+  padding: 0.65rem 0.7rem;
+}
+
+.choice-field {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1rem;
+  border: 0;
+  margin: 0;
+  padding: 0;
+}
+
+.choice-field legend {
+  inline-size: 100%;
+  margin-block-end: 0.35rem;
+}
+
+.choice-field label,
+.check-field {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-block-size: 44px;
+}
+
+.choice-field input,
+.check-field input {
+  inline-size: 1.2rem;
+  block-size: 1.2rem;
+}
+
+.transaction-details {
+  border-block: 1px solid var(--rule);
+  padding-block: 0.5rem;
+}
+
+.transaction-details summary {
+  min-block-size: 44px;
+  cursor: pointer;
+  color: var(--tide-strong);
+  font-weight: 720;
+  line-height: 44px;
+}
+
+.transaction-details[open] summary { margin-block-end: 0.75rem; }
+
+.form-error {
+  color: var(--signal);
+  font-size: 0.9rem;
+}
+
+.form-error[hidden] { display: none; }
 
 @media (max-width: 36rem) {
   .app-dialog {

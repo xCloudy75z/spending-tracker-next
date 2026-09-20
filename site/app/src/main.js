@@ -5,6 +5,8 @@ import { createClock } from './platform/clock.js';
 import { createStorage } from './platform/storage.js';
 import { createRouter, parseRoute } from './router.js';
 import { el, text } from './ui/dom.js';
+import { createTodayViewModel, renderToday } from './ui/today.js';
+import { openTransactionDialog } from './ui/transaction-dialog.js';
 
 export function createLifecycleController(options) {
   const eventTarget = options.eventTarget;
@@ -72,6 +74,32 @@ function renderPlaceholder(documentLike, container, route, locale, todayISO) {
   container.replaceChildren(section);
 }
 
+function renderDefaultView(documentLike, container, route, locale, todayISO, state, store, metadata = {}) {
+  if (route !== 'today') {
+    renderPlaceholder(documentLike, container, route, locale, todayISO);
+    return;
+  }
+  const openEditor = (transaction, trigger) => openTransactionDialog({
+    document: documentLike,
+    state: store.getState(),
+    locale,
+    todayISO,
+    transaction,
+    trigger,
+    onSubmit(command) {
+      store.dispatch(command);
+    },
+  });
+  const model = createTodayViewModel(state, todayISO, {
+    locale,
+    lastBackupAt: metadata.lastBackupAt,
+  });
+  renderToday(container, model, {
+    onAdd: trigger => openEditor(null, trigger),
+    onEdit: (id, trigger) => openEditor(state.transactions[id], trigger),
+  });
+}
+
 function updateNavigation(documentLike, route, locale) {
   for (const link of documentLike.querySelectorAll('[data-route]')) {
     const selected = link.dataset.route === route;
@@ -108,6 +136,7 @@ export function mountApp(root, dependencies = {}) {
   const clock = dependencies.clock || createClock();
   const storage = dependencies.storage || createStorage(windowLike.localStorage);
   const loadResult = storage.load();
+  const metadata = typeof storage.metadata === 'function' ? storage.metadata() : {};
   root.dataset.storeStatus = loadResult.status;
   const view = documentLike.querySelector('#view');
   const saveControl = documentLike.querySelector('[data-save-state]');
@@ -139,7 +168,7 @@ export function mountApp(root, dependencies = {}) {
     locale = state.settings.locale;
     setDocumentLocale(documentLike, locale);
     updateNavigation(documentLike, route, locale);
-    (dependencies.renderView || renderPlaceholder)(documentLike, view, route, locale, todayISO, state, store);
+    (dependencies.renderView || renderDefaultView)(documentLike, view, route, locale, todayISO, state, store, metadata);
   };
 
   const router = createRouter(windowLike, nextRoute => {
@@ -157,8 +186,8 @@ export function mountApp(root, dependencies = {}) {
     },
   });
   const unsubscribe = store.subscribe(() => render());
-  router.start();
   lifecycle.start();
+  router.start();
 
   if (loadResult.status === 'recovered-snapshot') {
     const banner = el(documentLike, 'p', {
