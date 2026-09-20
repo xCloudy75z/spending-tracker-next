@@ -3,6 +3,7 @@ import { createEmptyState } from './domain/model.js';
 import { t, setDocumentLocale } from './i18n.js';
 import { createClock } from './platform/clock.js';
 import { createStorage } from './platform/storage.js';
+import { registerPwa } from './platform/pwa.js';
 import { createRouter, parseRoute } from './router.js';
 import { announce, el, text } from './ui/dom.js';
 import { createTodayViewModel, renderToday } from './ui/today.js';
@@ -257,6 +258,23 @@ export function mountApp(root, dependencies = {}) {
   lifecycle.start();
   router.start();
 
+  let pwaController = null;
+  const showPwaState = status => {
+    documentLike.querySelector('[data-pwa-banner]')?.remove();
+    if (!['offline', 'update-ready'].includes(status)) return;
+    const banner = el(documentLike, 'div', { className: 'pwa-banner', attrs: { 'data-pwa-banner': '', role: 'status' } });
+    banner.append(el(documentLike, 'span', { text: t(locale, status === 'offline' ? 'pwa.offline' : 'pwa.updateReady') }));
+    if (status === 'update-ready') {
+      const update = el(documentLike, 'button', { className: 'button button-secondary', type: 'button', text: t(locale, 'pwa.updateNow'), attrs: { 'data-pwa-update': '' } });
+      update.addEventListener('click', () => pwaController?.activateUpdate());
+      banner.append(update);
+    }
+    root.prepend(banner);
+  };
+  const pwaRegistration = (dependencies.registerPwa || registerPwa)({ navigator: windowLike.navigator, window: windowLike, onState: showPwaState })
+    .then(controller => { pwaController = controller; })
+    .catch(() => showPwaState('unsupported'));
+
   if (loadResult.status === 'recovered-snapshot') {
     const banner = el(documentLike, 'p', {
       className: 'recovery-banner',
@@ -276,6 +294,7 @@ export function mountApp(root, dependencies = {}) {
       router.stop();
       lifecycle.stop();
       saveControl?.removeEventListener('click', onSaveControl);
+      void pwaRegistration;
     },
   };
 }

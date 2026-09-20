@@ -120,8 +120,20 @@ body {
   text-decoration: none;
 }
 
-.wordmark svg {
-  color: var(--tide);
+.wordmark img {
+  border-radius: 0.45rem;
+}
+
+.pwa-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  inline-size: min(100%, var(--content-max));
+  margin-inline: auto;
+  border-block-end: 1px solid var(--rule);
+  background: var(--mist);
+  padding: 0.65rem 1rem;
 }
 
 .icon-button {

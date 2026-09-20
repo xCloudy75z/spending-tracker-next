@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title desc">
+  <title id="title">Spending Tracker mark</title>
+  <desc id="desc">A rising allowance horizon above three calm balance lines.</desc>
+  <rect width="512" height="512" rx="112" fill="#F3F0E8"/>
+  <path d="M112 272a144 144 0 0 1 288 0h-82a62 62 0 0 0-124 0z" fill="#17232C"/>
+  <path d="M86 298h340" fill="none" stroke="#24766B" stroke-width="34" stroke-linecap="round"/>
+  <path d="M132 356h248M184 414h144" fill="none" stroke="#24766B" stroke-width="34" stroke-linecap="round"/>
+</svg>
