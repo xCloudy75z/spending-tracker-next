@@ -50,6 +50,19 @@ On Windows, Playwright WebKit does not expose the same context-level offline tog
 
 The app was reviewed at desktop Chromium, iPhone 13 portrait, and iPhone 13 landscape sizes. Evidence covers all four destinations in light English, dark English, and Arabic RTL, plus transaction/backup dialogs and corrupt-storage recovery. The six public hub pages were separately captured at desktop and iPhone sizes under `evidence/screenshots/hub/`. The capture tool rejects horizontal overflow before saving each page.
 
+## Published acceptance
+
+- Repository: <https://github.com/xCloudy75z/spending-tracker-next>
+- Project hub: <https://xcloudy75z.github.io/spending-tracker-next/>
+- Installed app entry point: <https://xcloudy75z.github.io/spending-tracker-next/app/>
+- Deployed source SHA: `e71ccc08f92c353c4e125b06393996dbda055b5a`
+- Exact-SHA Quality run: <https://github.com/xCloudy75z/spending-tracker-next/actions/runs/35512774094>
+- Verified-artifact Pages run: <https://github.com/xCloudy75z/spending-tracker-next/actions/runs/35512852586>
+
+The deployed hub, features, privacy, evidence, migration, release, app, manifest, service worker, and 192/512 install-icon URLs all returned HTTP 200. Published `results.json` reported the exact deployed SHA with 123 declarations and 199 executions. The complete 114-execution Playwright matrix then passed directly against the public Pages URL across desktop Chromium, iPhone WebKit portrait, and iPhone WebKit landscape, including the Chromium cold-offline test.
+
+The original `rem-money` repository was rechecked after publication and remained at main SHA `2267a85d2123dbdb875a0b4c673c59723bf9644e`.
+
 ## Release decision
 
-The candidate is suitable for repository publication and GitHub Pages deployment. The deployment remains contingent on the repository-hosted Quality workflow passing for the exact pushed `main` SHA, followed by live HTTP, install-metadata, and iPhone acceptance checks.
+Version 1.0.0 is published and accepted by the automated release gate, exact-SHA GitHub workflow, live HTTP/PWA checks, and the complete browser matrix against the deployed URL. A final add-to-home-screen and airplane-mode tap-through on the owner’s physical iPhone remains the only device-specific observation that cannot be performed by the Windows automation environment.

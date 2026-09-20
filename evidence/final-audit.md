@@ -4,7 +4,7 @@ This checklist records the release state of the standalone `spending-tracker-nex
 
 | Requirement | Status | Evidence |
 | --- | --- | --- |
-| Separate project and repository; original app untouched | Proven locally; live recheck pending publication | Separate cache/storage prefixes in `site/app/src/platform/storage.js` and `site/app/sw.js`; isolation regression in `tests/browser/pwa.spec.js` |
+| Separate project and repository; original app untouched | Proven locally and live | New repository and Pages deployment are independent; original `rem-money` main remained at `2267a85d2123dbdb875a0b4c673c59723bf9644e`; cache/storage isolation regression in `tests/browser/pwa.spec.js` |
 | Static, serverless, local-only app | Proven | `site/app/`, CSP in `site/app/index.html`, privacy page, and public-site validator |
 | Installable icon and standalone PWA metadata | Proven | `site/app/manifest.webmanifest`, generated 192/512/maskable icons, `tests/unit/pwa.test.js`, `tests/browser/pwa.spec.js` |
 | Cold offline operation after first load | Proven in Chromium; WebKit cache path proven in emulation | `tests/browser/offline.spec.js`; platform limitation documented in `evidence/verification.md` |
@@ -19,7 +19,7 @@ This checklist records the release state of the standalone `spending-tracker-nex
 | English/Arabic RTL and dark/light/system themes | Proven | Catalog parity tests, RTL browser journey, accessibility scans, and visual matrix |
 | Keyboard, touch-target, reduced-motion, and serious/critical axe checks | Proven | Accessibility and primitive browser suites; zero serious/critical findings |
 | Responsive desktop, iPhone portrait, and iPhone landscape layouts | Proven in automated profiles | 114 browser executions and reviewed screenshots in `evidence/screenshots/` |
-| Exact tested commit deployed by least-privilege CI | Proven by workflow regression; live run pending publication | `.github/workflows/quality.yml`, `.github/workflows/pages.yml`, `tests/site/validate-public-site.test.js` |
+| Exact tested commit deployed by least-privilege CI | Proven live | Quality run `35512774094` passed, then Pages run `35512852586` deployed its exact verified artifact; `tests/site/validate-public-site.test.js` guards the chain |
 | Public report hub, privacy, migration, release, and audit map | Proven | Seven validated HTML files under `site/` and machine-readable `site/evidence/results.json` |
 | No tracked local account path, email address, or credential | Proven at candidate scan | Filename-only tracked-file scan; deliberate fake-secret fixture is required by validator tests |
 
