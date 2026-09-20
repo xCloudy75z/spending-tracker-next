@@ -112,6 +112,7 @@ export async function validatePublicSite(rootDir) {
     }
     const evidenceHtml = await readFile(join(siteRoot, 'evidence', 'index.html'), 'utf8');
     if (!evidenceHtml.includes(`data-version="${results.version}"`)) errors.push('evidence/index.html: version claim does not match results.json');
+    if (!evidenceHtml.includes(`data-declarations="${results.declarationCount}"`)) errors.push('evidence/index.html: declaration claim does not match results.json');
     if (!evidenceHtml.includes(`data-executions="${results.executionCount}"`)) errors.push('evidence/index.html: execution claim does not match results.json');
   } catch (error) {
     errors.push(`evidence: missing or invalid machine-readable results (${error.message})`);

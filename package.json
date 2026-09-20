@@ -16,7 +16,10 @@
     "test": "npm run test:unit && npm run test:integration && npm run test:site",
     "icons": "node tools/generate-icons.mjs",
     "capture:hub": "node tools/capture-hub.mjs",
-    "verify": "npm test && npm run validate:site"
+    "browsers:install": "node tools/install-browsers.mjs",
+    "clean": "node tools/clean.mjs",
+    "verify": "node tools/verify.mjs",
+    "verify:full": "npm run verify"
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.13.0",

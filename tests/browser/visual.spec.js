@@ -9,7 +9,8 @@ test('visual evidence captures all primary screens without horizontal clipping',
   for (const route of ['today', 'activity', 'plan', 'card']) {
     await page.locator(`[data-route="${route}"]`).click();
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth + 1)).toBe(true);
-    await page.screenshot({ path: path.join(output, `${testInfo.project.name}-${route}.png`), fullPage: true });
+    if (process.env.CAPTURE_EVIDENCE !== '0') {
+      await page.screenshot({ path: path.join(output, `${testInfo.project.name}-${route}.png`), fullPage: true });
+    }
   }
 });
-

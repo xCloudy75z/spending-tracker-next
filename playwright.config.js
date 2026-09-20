@@ -7,7 +7,10 @@ export default defineConfig({
   testDir: './tests/browser',
   fullyParallel: false,
   workers: 1,
-  reporter: [['line']],
+  reporter: [
+    ['line'],
+    ['json', { outputFile: 'evidence/reports/playwright.json' }],
+  ],
   use: {
     baseURL: 'http://127.0.0.1:4173',
     headless: true,
@@ -18,7 +21,9 @@ export default defineConfig({
   projects: [
     {
       name: 'desktop-chromium',
-      use: { channel: 'msedge', viewport: { width: 1440, height: 1000 } },
+      use: process.env.CI
+        ? { browserName: 'chromium', viewport: { width: 1440, height: 1000 } }
+        : { channel: 'msedge', viewport: { width: 1440, height: 1000 } },
     },
     {
       name: 'iphone-webkit',
