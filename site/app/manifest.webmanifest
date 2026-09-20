@@ -1,0 +1,12 @@
+{
+  "name": "Spending Tracker",
+  "short_name": "Spending",
+  "description": "A private, offline-first daily spending tracker.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#F3F0E8",
+  "theme_color": "#24766B",
+  "lang": "en",
+  "dir": "auto"
+}

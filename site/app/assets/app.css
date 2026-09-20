@@ -71,6 +71,153 @@ body {
   line-height: 1.5;
 }
 
+.svg-sprite {
+  position: absolute;
+  inline-size: 0;
+  block-size: 0;
+  overflow: hidden;
+}
+
+.skip-link {
+  position: fixed;
+  z-index: 100;
+  inset-block-start: 0.5rem;
+  inset-inline-start: 0.5rem;
+  transform: translateY(-180%);
+  border-radius: 0.5rem;
+  background: var(--ink);
+  color: var(--paper);
+  padding: 0.65rem 0.9rem;
+}
+
+.skip-link:focus {
+  transform: translateY(0);
+}
+
+.app-shell {
+  min-block-size: 100dvh;
+  padding: var(--safe-top) var(--safe-right) calc(5.75rem + var(--safe-bottom)) var(--safe-left);
+}
+
+.app-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  inline-size: min(100%, var(--content-max));
+  min-block-size: 4.5rem;
+  margin-inline: auto;
+  padding-inline: 1rem;
+  border-block-end: 1px solid var(--rule);
+}
+
+.wordmark {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.65rem;
+  color: var(--ink);
+  font-weight: 720;
+  letter-spacing: -0.02em;
+  text-decoration: none;
+}
+
+.wordmark svg {
+  color: var(--tide);
+}
+
+.icon-button {
+  display: inline-grid;
+  place-items: center;
+  border-color: var(--rule);
+  background: transparent;
+  color: var(--ink);
+  padding: 0.6rem;
+}
+
+.icon-button svg {
+  inline-size: 1.35rem;
+  block-size: 1.35rem;
+}
+
+#main-content {
+  inline-size: min(100%, var(--content-max));
+  min-block-size: calc(100dvh - 10rem);
+  margin-inline: auto;
+  padding: clamp(1.25rem, 4vw, 2rem) 1rem 2rem;
+}
+
+.view-shell {
+  max-inline-size: 40rem;
+}
+
+.view-shell h1 {
+  margin: 0.2rem 0 0.6rem;
+  font-size: clamp(2rem, 8vw, 3.75rem);
+  line-height: 1.02;
+  letter-spacing: -0.055em;
+}
+
+.view-date {
+  margin: 0;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.bottom-nav {
+  position: fixed;
+  z-index: 20;
+  inset-inline: 0;
+  inset-block-end: 0;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  min-block-size: calc(4.75rem + var(--safe-bottom));
+  border-block-start: 1px solid var(--rule);
+  background: color-mix(in srgb, var(--surface) 94%, transparent);
+  padding: 0.35rem max(0.4rem, var(--safe-right)) var(--safe-bottom) max(0.4rem, var(--safe-left));
+  backdrop-filter: blur(16px);
+}
+
+.bottom-nav a {
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: 0.15rem;
+  min-block-size: 44px;
+  border-radius: 0.6rem;
+  color: var(--muted);
+  font-size: 0.75rem;
+  text-decoration: none;
+}
+
+.bottom-nav a[aria-current="page"] {
+  background: var(--mist);
+  color: var(--tide-strong);
+  font-weight: 700;
+}
+
+.bottom-nav svg {
+  inline-size: 1.35rem;
+  block-size: 1.35rem;
+}
+
+.storage-error {
+  border-inline-start: 4px solid var(--signal);
+  padding-inline-start: 1rem;
+}
+
+.storage-error input[type="file"] {
+  display: block;
+  max-inline-size: 100%;
+  margin-block-start: 0.75rem;
+}
+
+.recovery-banner {
+  inline-size: min(100%, var(--content-max));
+  margin: 0 auto;
+  background: var(--mist);
+  color: var(--ink);
+  padding: 0.75rem 1rem;
+}
+
 button,
 input,
 select,
