@@ -16,5 +16,10 @@
     "test": "npm run test:unit && npm run test:integration && npm run test:site",
     "icons": "node tools/generate-icons.mjs",
     "verify": "npm test && npm run validate:site"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "^4.13.0",
+    "@playwright/test": "^1.63.0",
+    "sharp": "^0.35.4"
   }
 }

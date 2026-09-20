@@ -1,6 +1,8 @@
 .worktrees/
 .superpowers/
 node_modules/
+.npm-cache/
+.playwright-browsers/
 playwright-report/
 test-results/
 coverage/

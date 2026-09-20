@@ -1,0 +1,184 @@
+:root {
+  color-scheme: light dark;
+  --paper: #f3f0e8;
+  --surface: #fffdf8;
+  --ink: #17232c;
+  --muted: #64727b;
+  --tide: #24766b;
+  --tide-strong: #185b53;
+  --mist: #dce6e2;
+  --amber: #a46616;
+  --signal: #b0443f;
+  --rule: #cbd3cf;
+  --focus: #136f9f;
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-right: env(safe-area-inset-right, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-left: env(safe-area-inset-left, 0px);
+  --content-max: 46rem;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #10181d;
+    --surface: #19252b;
+    --ink: #edf3f0;
+    --muted: #a9b7b3;
+    --tide: #62b7a7;
+    --tide-strong: #8acdbf;
+    --mist: #243c3a;
+    --amber: #e2aa58;
+    --signal: #ef8078;
+    --rule: #34464c;
+    --focus: #76c7f0;
+  }
+}
+
+:root[data-theme="dark"] {
+  --paper: #10181d;
+  --surface: #19252b;
+  --ink: #edf3f0;
+  --muted: #a9b7b3;
+  --tide: #62b7a7;
+  --tide-strong: #8acdbf;
+  --mist: #243c3a;
+  --amber: #e2aa58;
+  --signal: #ef8078;
+  --rule: #34464c;
+  --focus: #76c7f0;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  min-block-size: 100%;
+  background: var(--paper);
+  color: var(--ink);
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  min-block-size: 100%;
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+button,
+input,
+select,
+textarea {
+  color: inherit;
+  font: inherit;
+}
+
+button,
+.button,
+.icon-button {
+  min-inline-size: 44px;
+  min-block-size: 44px;
+}
+
+button,
+.button {
+  border: 1px solid transparent;
+  border-radius: 0.7rem;
+  background: var(--tide);
+  color: #fff;
+  cursor: pointer;
+  padding: 0.65rem 1rem;
+}
+
+.button-secondary {
+  border-color: var(--rule);
+  background: transparent;
+  color: var(--ink);
+}
+
+:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 3px;
+}
+
+[disabled],
+[aria-disabled="true"] {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.tabular,
+[data-money] {
+  font-variant-numeric: tabular-nums lining-nums;
+}
+
+.visually-hidden {
+  position: absolute !important;
+  inline-size: 1px !important;
+  block-size: 1px !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0 0 0 0) !important;
+  white-space: nowrap !important;
+}
+
+.app-dialog {
+  inline-size: min(36rem, calc(100% - 2rem - var(--safe-left) - var(--safe-right)));
+  max-block-size: calc(100dvh - 2rem - var(--safe-top) - var(--safe-bottom));
+  border: 1px solid var(--rule);
+  border-radius: 1rem;
+  background: var(--surface);
+  color: var(--ink);
+  padding: 1.25rem;
+}
+
+.app-dialog::backdrop {
+  background: rgb(10 18 22 / 0.64);
+}
+
+.app-dialog h2 {
+  margin: 0;
+  font-size: clamp(1.35rem, 4vw, 1.75rem);
+  line-height: 1.2;
+}
+
+.dialog-description {
+  margin: 0.5rem 0 1.25rem;
+  color: var(--muted);
+}
+
+.dialog-body {
+  overflow: auto;
+}
+
+.dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  margin-block-start: 1.5rem;
+}
+
+@media (max-width: 36rem) {
+  .app-dialog {
+    inline-size: calc(100% - 1rem - var(--safe-left) - var(--safe-right));
+    margin-block-end: calc(0.5rem + var(--safe-bottom));
+    padding: 1rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    transition-duration: 0.001ms !important;
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}
