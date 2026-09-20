@@ -3,9 +3,9 @@
 ## Clean-room rehearsal
 
 - Date: 2026-09-20
-- Final evidence generated: 2026-09-20T13:02:59.980Z
+- Final evidence generated: 2026-09-20T13:10:49.057Z
 - Source commit at rehearsal start: `3ea64fe38aeafdf793b33e00b9d6bcda7423d4a3`
-- Final audited candidate verified: `f6b5abd6a82e4f4bee83cf420699a97dcb472a0f`
+- Final audited candidate verified: `89b2b0d96c087f4028ac0d69ed119e4ef8209501`
 - Platform: Windows, Node.js 25.9.0, npm 11.12.1
 - Result: **PASS**
 
