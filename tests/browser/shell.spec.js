@@ -14,7 +14,7 @@ test('application shell is semantic and hash navigation follows browser history'
 
 test('skip link is first in keyboard order and moves focus to main content', async ({ page }, testInfo) => {
   await page.goto('/app/');
-  if (testInfo.project.name === 'iphone-webkit') {
+  if (testInfo.project.name.startsWith('iphone')) {
     await page.locator('.skip-link').focus();
   } else {
     await page.keyboard.press('Tab');

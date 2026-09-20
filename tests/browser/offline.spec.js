@@ -5,7 +5,7 @@ test('offline cold launch and every primary route work from the scoped cache', a
   await page.evaluate(() => navigator.serviceWorker.ready);
   await page.reload();
   await expect.poll(() => page.evaluate(() => Boolean(navigator.serviceWorker.controller))).toBe(true);
-  if (testInfo.project.name === 'iphone-webkit') {
+  if (testInfo.project.name.startsWith('iphone')) {
     const cached = await page.evaluate(async () => ({
       shell: Boolean(await caches.match('./index.html')),
       main: Boolean(await caches.match('./src/main.js')),
@@ -23,5 +23,5 @@ test('offline cold launch and every primary route work from the scoped cache', a
     await expect(page.locator(`[data-view="${route}"]`)).toBeVisible();
   }
   await expect(page.locator('[data-pwa-banner]')).toContainText(/offline/i);
-  if (testInfo.project.name !== 'iphone-webkit') await context.setOffline(false);
+  if (!testInfo.project.name.startsWith('iphone')) await context.setOffline(false);
 });

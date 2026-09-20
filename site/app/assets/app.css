@@ -3,7 +3,7 @@
   --paper: #f3f0e8;
   --surface: #fffdf8;
   --ink: #17232c;
-  --muted: #64727b;
+  --muted: #58666f;
   --tide: #24766b;
   --tide-strong: #185b53;
   --mist: #dce6e2;
@@ -11,6 +11,8 @@
   --signal: #b0443f;
   --rule: #cbd3cf;
   --focus: #136f9f;
+  --on-tide: #ffffff;
+  --on-signal: #ffffff;
   --safe-top: env(safe-area-inset-top, 0px);
   --safe-right: env(safe-area-inset-right, 0px);
   --safe-bottom: env(safe-area-inset-bottom, 0px);
@@ -34,6 +36,8 @@
     --signal: #ef8078;
     --rule: #34464c;
     --focus: #76c7f0;
+    --on-tide: #10181d;
+    --on-signal: #10181d;
   }
 }
 
@@ -49,6 +53,8 @@
   --signal: #ef8078;
   --rule: #34464c;
   --focus: #76c7f0;
+  --on-tide: #10181d;
+  --on-signal: #10181d;
 }
 
 * {
@@ -484,7 +490,7 @@ body {
 
 .button-danger {
   background: var(--signal);
-  color: #fff;
+  color: var(--on-signal);
 }
 
 @media (max-width: 42rem) {
@@ -584,7 +590,7 @@ button,
   border: 1px solid transparent;
   border-radius: 0.7rem;
   background: var(--tide);
-  color: #fff;
+  color: var(--on-tide);
   cursor: pointer;
   padding: 0.65rem 1rem;
 }

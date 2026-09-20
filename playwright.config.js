@@ -11,15 +11,22 @@ export default defineConfig({
   use: {
     baseURL: 'http://127.0.0.1:4173',
     headless: true,
+    locale: 'en-AE',
+    timezoneId: 'Asia/Dubai',
+    reducedMotion: 'reduce',
   },
   projects: [
     {
       name: 'desktop-chromium',
-      use: { channel: 'msedge' },
+      use: { channel: 'msedge', viewport: { width: 1440, height: 1000 } },
     },
     {
       name: 'iphone-webkit',
-      use: { ...devices['iPhone 15'], browserName: 'webkit' },
+      use: { ...devices['iPhone 13'], browserName: 'webkit', locale: 'en-AE', timezoneId: 'Asia/Dubai' },
+    },
+    {
+      name: 'iphone-landscape-webkit',
+      use: { ...devices['iPhone 13 landscape'], browserName: 'webkit', locale: 'en-AE', timezoneId: 'Asia/Dubai' },
     },
   ],
   webServer: {
