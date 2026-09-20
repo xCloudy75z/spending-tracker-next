@@ -180,9 +180,9 @@ test('Plan and Card remain usable at narrow portrait, landscape, and increased t
   await page.evaluate(() => { document.documentElement.style.fontSize = '200%'; });
   await page.locator('[data-route="plan"]').click();
   const last = page.locator('[data-backup-import]');
-  await last.scrollIntoViewIfNeeded();
+  await last.evaluate(element => element.scrollIntoView({ block: 'start' }));
   await expect(last).toBeVisible();
   const box = await last.boundingBox();
   const navBox = await page.locator('.bottom-nav').boundingBox();
-  expect(box.y).toBeLessThan(navBox.y);
+  expect(box.y + box.height).toBeLessThanOrEqual(navBox.y);
 });

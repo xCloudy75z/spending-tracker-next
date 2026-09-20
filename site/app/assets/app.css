@@ -57,6 +57,17 @@
   --on-signal: #10181d;
 }
 
+/* WebKit can retain an inherited pre-theme text color after a runtime theme
+   switch. Re-declare the foreground on the rendered workspace so every
+   descendant, including form controls, recomputes against the dark palette. */
+:root[data-theme="dark"] .workspace,
+:root[data-theme="dark"] .view-shell,
+:root[data-theme="dark"] input,
+:root[data-theme="dark"] select,
+:root[data-theme="dark"] textarea {
+  color: var(--ink);
+}
+
 * {
   box-sizing: border-box;
 }

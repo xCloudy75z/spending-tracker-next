@@ -38,11 +38,19 @@ test('accessibility scan passes every primary workspace and dark mode', async ({
   await page.locator('[data-setting-theme]').selectOption('dark');
   await page.reload();
   await page.locator('[data-route="plan"]').click();
+  await expect(page.locator('[data-view="plan"] h1')).toHaveCount(1);
   await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
   await expect.poll(() => page.evaluate(() => ({
     ink: getComputedStyle(document.documentElement).getPropertyValue('--ink').trim(),
     body: getComputedStyle(document.body).color,
-  }))).toEqual({ ink: '#edf3f0', body: 'rgb(237, 243, 240)' });
+    workspace: getComputedStyle(document.querySelector('[data-view="plan"]')).color,
+    control: getComputedStyle(document.querySelector('#cycle-start-setting')).color,
+  }))).toEqual({
+    ink: '#edf3f0',
+    body: 'rgb(237, 243, 240)',
+    workspace: 'rgb(237, 243, 240)',
+    control: 'rgb(237, 243, 240)',
+  });
   await expectNoSeriousViolations(page);
 });
 
