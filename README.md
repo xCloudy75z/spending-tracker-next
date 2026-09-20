@@ -10,7 +10,7 @@ Spending Tracker is a private, offline-first progressive web app for answering o
 
 - Calculates a cycle-aware daily safe-to-spend amount.
 - Captures, edits, filters, and deletes income and spending.
-- Plans a spendable cycle allowance, dates, category budgets, and the next rollover.
+- Plans a spendable cycle allowance, preferred start day, savings treatment, category budgets, and the next rollover.
 - Tracks outstanding card purchases, payment status, and wife reimbursements independently.
 - Reviews pasted bank SMS text before importing recognized transactions.
 - Switches between English and Arabic with a genuine right-to-left layout.
@@ -28,7 +28,7 @@ That privacy model has a deliberate cost: clearing Safari website data, losing t
 1. Open the [app URL](https://xcloudy75z.github.io/spending-tracker-next/app/) in Safari while online.
 2. Tap **Share**.
 3. Choose **Add to Home Screen**, then confirm **Add**.
-4. Open the installed icon once and confirm the app reports that it is ready offline.
+4. Open the installed icon once while online and wait for the app to finish loading before relying on offline use.
 
 ## Backup or move to another device
 
@@ -54,7 +54,7 @@ Run the complete release gate with:
 npm run verify
 ```
 
-The gate validates the static site, runs 60 unit tests, 10 integration tests, 6 site/accounting tests, and 30 browser declarations across desktop Chromium plus iPhone WebKit portrait and landscape. It then generates and validates exact machine-readable evidence. At version 1.0.0 this is **106 distinct declarations and 166 executions**.
+The gate validates the static site, runs 67 unit tests, 10 integration tests, 7 site/accounting tests, and 38 browser declarations across desktop Chromium plus iPhone WebKit portrait and landscape. It then generates and validates exact machine-readable evidence. At version 1.0.0 this is **122 distinct declarations and 198 executions**.
 
 ## Repository map
 
@@ -72,7 +72,7 @@ The gate validates the static site, runs 60 unit tests, 10 integration tests, 6 
 
 - The durable-storage target is a normal current Safari session; private browsing is unsuitable.
 - There is no cloud sync, multi-device merge, password, or app-level encryption.
-- Enter the cycle allowance after setting aside fixed commitments and savings; the app does not model bank balances, recurring bills, credit limits, statement dates, or due dates.
+- Enter the cycle allowance after fixed commitments. Savings can remain inside that allowance or be deducted from daily spending through Plan; the app does not model bank balances, recurring bills, credit limits, statement dates, or due dates.
 - Automatic SMS inbox access is not available in a web app; the user pastes message text for review.
 - Desktop cold-offline reload is exercised directly. Windows Playwright WebKit cannot toggle context networking, so iPhone-emulation tests instead verify cached resources, service-worker registration, offline events, and route availability.
 - An invalid backup is rejected; a valid restore intentionally replaces the current local state after preview.

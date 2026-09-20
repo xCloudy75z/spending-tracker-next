@@ -1,5 +1,5 @@
 import { addDays } from '../domain/dates.js';
-import { cycleForDate } from '../domain/cycles.js';
+import { cycleForDate, effectiveCycleBudget } from '../domain/cycles.js';
 import { formatDate, formatMoney, t } from '../i18n.js';
 import { el } from './dom.js';
 
@@ -37,7 +37,8 @@ export function createPlanModel(state, todayISO, metadata = {}) {
     needsCategory,
     setupRequired: needsCycle || needsCategory,
     primaryAction: needsCycle || needsCategory ? 'setup' : 'review',
-    unallocated: Math.round((Number(activeCycle?.startBudget || 0) - allocated) * 100) / 100,
+    spendableAllowance: effectiveCycleBudget(activeCycle),
+    unallocated: Math.round((effectiveCycleBudget(activeCycle) - allocated) * 100) / 100,
     lastBackupAt: metadata.lastBackupAt || null,
   };
 }
@@ -47,6 +48,21 @@ function inputField(documentLike, id, label, type, attrs = {}) {
   const labelNode = el(documentLike, 'label', { className: 'form-field', attrs: { for: id } });
   labelNode.append(el(documentLike, 'span', { className: 'form-label', text: label }), input);
   return { label: labelNode, input };
+}
+
+export function preferredCycleStart(todayISO, salaryDay) {
+  const [year, month, today] = String(todayISO).split('-').map(Number);
+  const day = Math.min(28, Math.max(1, Number(salaryDay) || 1));
+  let targetYear = year;
+  let targetMonth = month;
+  if (today < day) {
+    targetMonth -= 1;
+    if (targetMonth === 0) {
+      targetMonth = 12;
+      targetYear -= 1;
+    }
+  }
+  return `${String(targetYear).padStart(4, '0')}-${String(targetMonth).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
 }
 
 function dispatchForm(form, createCommand, onCommand) {
@@ -96,17 +112,20 @@ export function renderPlan(container, state, options = {}) {
     const form = el(documentLike, 'form', { className: 'workspace-block setup-form', attrs: { 'data-cycle-setup': '' } });
     form.append(el(documentLike, 'h2', { text: t(locale, 'plan.allowance') }));
     const allowance = inputField(documentLike, 'setup-allowance', t(locale, 'plan.allowance'), 'number', { name: 'startBudget', min: '0.01', step: '0.01', required: '' });
-    const start = inputField(documentLike, 'setup-start', t(locale, 'transaction.date'), 'date', { name: 'startDate', value: model.todayISO, required: '' });
-    const end = inputField(documentLike, 'setup-end', t(locale, 'plan.cycleDates'), 'date', { name: 'endDate', value: addDays(model.todayISO, 29), required: '' });
-    form.append(allowance.label, start.label, end.label, el(documentLike, 'button', { className: 'button button-primary', type: 'submit', text: t(locale, 'common.save') }));
-    dispatchForm(form, data => ({ type: 'cycle/add', payload: { startBudget: Number(data.get('startBudget')), startDate: data.get('startDate'), endDate: data.get('endDate') } }), options.onCommand);
+    const preferredStart = preferredCycleStart(model.todayISO, state.settings.salaryDay);
+    const start = inputField(documentLike, 'setup-start', t(locale, 'transaction.date'), 'date', { name: 'startDate', value: preferredStart, required: '' });
+    const end = inputField(documentLike, 'setup-end', t(locale, 'plan.cycleDates'), 'date', { name: 'endDate', value: addDays(preferredStart, 29), required: '' });
+    const savings = inputField(documentLike, 'setup-savings', t(locale, 'plan.savingsTarget'), 'number', { name: 'savingsTarget', value: '0', min: '0', step: '0.01', required: '' });
+    form.append(allowance.label, savings.label, start.label, end.label, el(documentLike, 'button', { className: 'button button-primary', type: 'submit', text: t(locale, 'common.save') }));
+    dispatchForm(form, data => ({ type: 'cycle/add', payload: { startBudget: Number(data.get('startBudget')), savingsTarget: Number(data.get('savingsTarget')), savingsTreatment: state.settings.savingsTreatment || 'included', startDate: data.get('startDate'), endDate: data.get('endDate'), todayISO: options.todayISO } }), options.onCommand);
     section.append(form);
   } else {
     const cycle = el(documentLike, 'section', { className: 'workspace-block cycle-summary' });
     cycle.append(
       el(documentLike, 'h2', { text: t(locale, 'plan.allowance') }),
-      el(documentLike, 'p', { className: 'summary-amount', text: formatMoney(locale, model.activeCycle.startBudget) }),
+      el(documentLike, 'p', { className: 'summary-amount', text: formatMoney(locale, model.spendableAllowance) }),
       el(documentLike, 'p', { text: `${formatDate(locale, model.activeCycle.startDate)} — ${formatDate(locale, model.activeCycle.endDate)}` }),
+      el(documentLike, 'p', { text: `${t(locale, 'plan.savingsTarget')}: ${formatMoney(locale, model.activeCycle.savingsTarget || 0)} · ${t(locale, `settings.savings${model.activeCycle.savingsTreatment === 'deduct' ? 'Deduct' : 'Included'}`)}` }),
     );
     section.append(cycle);
   }
@@ -151,8 +170,9 @@ export function renderPlan(container, state, options = {}) {
     const allowance = inputField(documentLike, 'rollover-allowance', t(locale, 'plan.allowance'), 'number', { name: 'startBudget', value: model.activeCycle.startBudget, min: '0.01', step: '0.01', required: '' });
     const start = inputField(documentLike, 'rollover-start', t(locale, 'transaction.date'), 'date', { name: 'startDate', value: startDate, required: '' });
     const end = inputField(documentLike, 'rollover-end', t(locale, 'plan.cycleDates'), 'date', { name: 'endDate', value: addDays(startDate, 29), required: '' });
-    form.append(allowance.label, start.label, end.label, el(documentLike, 'button', { className: 'button button-primary', type: 'submit', text: t(locale, 'plan.rollover') }));
-    dispatchForm(form, data => ({ type: 'cycle/add', payload: { startBudget: Number(data.get('startBudget')), startDate: data.get('startDate'), endDate: data.get('endDate') } }), options.onCommand);
+    const savings = inputField(documentLike, 'rollover-savings', t(locale, 'plan.savingsTarget'), 'number', { name: 'savingsTarget', value: model.activeCycle.savingsTarget || 0, min: '0', step: '0.01', required: '' });
+    form.append(allowance.label, savings.label, start.label, end.label, el(documentLike, 'button', { className: 'button button-primary', type: 'submit', text: t(locale, 'plan.rollover') }));
+    dispatchForm(form, data => ({ type: 'cycle/add', payload: { startBudget: Number(data.get('startBudget')), savingsTarget: Number(data.get('savingsTarget')), savingsTreatment: state.settings.savingsTreatment || 'included', startDate: data.get('startDate'), endDate: data.get('endDate'), todayISO: options.todayISO } }), options.onCommand);
     rollover.append(form);
     section.append(rollover);
   }
@@ -182,7 +202,21 @@ export function renderPlan(container, state, options = {}) {
   wife.addEventListener('change', async () => {
     if (await options.onCommand?.({ type: 'settings/wifeTracking', payload: { enabled: wife.checked } }) === false) wife.checked = state.settings.wifeTracking;
   });
-  settings.append(language, theme, el(documentLike, 'label', { className: 'check-field', attrs: { for: wife.id } }, [wife, t(locale, 'settings.wifeTracking')]));
+  const cycleStart = inputField(documentLike, 'cycle-start-setting', t(locale, 'settings.cycleStart'), 'number', { value: state.settings.salaryDay, min: '1', max: '28', step: '1', 'data-setting-cycle-start': '' });
+  cycleStart.input.addEventListener('change', async () => {
+    const value = Number(cycleStart.input.value);
+    if (await options.onCommand?.({ type: 'settings/update', payload: { salaryDay: value } }) === false) cycleStart.input.value = state.settings.salaryDay;
+  });
+  const savingsTreatment = el(documentLike, 'select', { attrs: { 'aria-label': t(locale, 'settings.savingsTreatment'), 'data-setting-savings': '' } });
+  for (const [value, key] of [['included', 'settings.savingsIncluded'], ['deduct', 'settings.savingsDeduct']]) {
+    const item = el(documentLike, 'option', { text: t(locale, key), attrs: { value } });
+    item.selected = (state.settings.savingsTreatment || 'included') === value;
+    savingsTreatment.append(item);
+  }
+  savingsTreatment.addEventListener('change', async () => {
+    if (await options.onCommand?.({ type: 'settings/update', payload: { savingsTreatment: savingsTreatment.value } }) === false) savingsTreatment.value = state.settings.savingsTreatment || 'included';
+  });
+  settings.append(language, theme, cycleStart.label, savingsTreatment, el(documentLike, 'label', { className: 'check-field', attrs: { for: wife.id } }, [wife, t(locale, 'settings.wifeTracking')]));
   section.append(settings);
 
   const backup = el(documentLike, 'section', { className: 'workspace-block backup-entry' });

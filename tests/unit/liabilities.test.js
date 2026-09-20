@@ -52,4 +52,8 @@ test('wife payments and item settlement cannot double-count reimbursement', () =
     () => settleWifeTransaction(partiallyPaid, 'wife', true),
     error => error.code === 'WIFE_SETTLEMENT_EXCEEDS_BALANCE',
   );
+  const summary = wifeSummary(partiallyPaid);
+  assert.equal(summary.unsettledPurchases[0].outstandingAmount, 80);
+  assert.equal(summary.unsettledPurchases[0].paymentAllocated, 40);
+  assert.equal(summary.unsettledPurchases[0].settlementDisabled, true);
 });

@@ -1,38 +1,38 @@
 {
   "version": "1.0.0",
-  "commit": "35f7e839fd46a7da69e34a874ed3c0d2a2f3e518",
-  "generatedAt": "2026-09-20T11:55:46.815Z",
-  "declarationCount": 106,
-  "caseCount": 106,
-  "executionCount": 166,
+  "commit": "cefa145781a3e8de4d91dae22307f6c948f28510",
+  "generatedAt": "2026-09-20T12:26:54.424Z",
+  "declarationCount": 117,
+  "caseCount": 117,
+  "executionCount": 187,
   "suites": {
-    "unit": 60,
+    "unit": 65,
     "integration": 10,
-    "site": 6,
-    "browserDeclarations": 30,
-    "browserExecutions": 90
+    "site": 7,
+    "browserDeclarations": 35,
+    "browserExecutions": 105
   },
   "browserMatrix": [
     {
       "project": "desktop-chromium",
       "engine": "Chromium",
       "viewport": "1440x1000",
-      "declarations": 30,
-      "executions": 30
+      "declarations": 35,
+      "executions": 35
     },
     {
       "project": "iphone-webkit",
       "engine": "WebKit",
       "viewport": "iPhone 13 portrait",
-      "declarations": 30,
-      "executions": 30
+      "declarations": 35,
+      "executions": 35
     },
     {
       "project": "iphone-landscape-webkit",
       "engine": "WebKit",
       "viewport": "iPhone 13 landscape",
-      "declarations": 30,
-      "executions": 30
+      "declarations": 35,
+      "executions": 35
     }
   ],
   "claims": {

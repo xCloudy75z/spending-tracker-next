@@ -9,16 +9,21 @@ export function createCardModel(state) {
   };
 }
 
-function ledgerRow(documentLike, locale, transaction, actionLabel, onAction, kind) {
+function ledgerRow(documentLike, locale, transaction, actionLabel, onAction, kind, presentation = {}) {
   const row = el(documentLike, 'article', { className: 'ledger-row', attrs: { 'data-ledger-id': transaction.id, 'data-ledger-kind': kind } });
   const copy = el(documentLike, 'div', { className: 'ledger-row__copy' });
   copy.append(
-    el(documentLike, 'strong', { text: formatMoney(locale, transaction.amount) }),
+    el(documentLike, 'strong', { text: formatMoney(locale, presentation.amount ?? transaction.amount) }),
     el(documentLike, 'span', {}, text(documentLike, transaction.note || formatDate(locale, transaction.date))),
   );
-  const action = el(documentLike, 'button', { className: 'button button-secondary', type: 'button', text: actionLabel });
-  action.addEventListener('click', async () => { await onAction?.(transaction.id); });
-  row.append(copy, action);
+  if (presentation.note) copy.append(el(documentLike, 'small', { text: presentation.note }));
+  row.append(copy);
+  if (actionLabel) {
+    const action = el(documentLike, 'button', { className: 'button button-secondary', type: 'button', text: actionLabel });
+    action.disabled = Boolean(presentation.disabled);
+    action.addEventListener('click', async () => { await onAction?.(transaction.id); });
+    row.append(action);
+  }
   return row;
 }
 
@@ -54,29 +59,44 @@ export function renderCard(container, state, options = {}) {
     );
     if (!model.wife.unsettledPurchases.length) wife.append(el(documentLike, 'p', { className: 'empty-copy', text: t(locale, 'card.noWifeBalance') }));
     for (const item of model.wife.unsettledPurchases) {
-      wife.append(ledgerRow(documentLike, locale, item, t(locale, 'card.markReimbursed'), id => options.onCommand?.({ type: 'wife/settle', payload: { id, settled: true } }), 'wife'));
+      wife.append(ledgerRow(
+        documentLike,
+        locale,
+        item,
+        t(locale, 'card.markReimbursed'),
+        id => options.onCommand?.({ type: 'wife/settle', payload: { id, settled: true } }),
+        'wife',
+        {
+          amount: item.outstandingAmount,
+          disabled: item.settlementDisabled,
+          note: item.paymentAllocated > 0 ? t(locale, 'card.paymentAllocated') : '',
+        },
+      ));
     }
-    if (model.wife.settledPurchases.length || model.wife.payments.length) {
+    if (model.wife.settledPurchases.length || model.wife.paymentCoveredPurchases.length || model.wife.payments.length) {
       const history = el(documentLike, 'details', { className: 'ledger-history' });
-      history.append(el(documentLike, 'summary', { text: `${t(locale, 'card.settled')} (${model.wife.settledPurchases.length + model.wife.payments.length})` }));
+      history.append(el(documentLike, 'summary', { text: `${t(locale, 'card.settled')} (${model.wife.settledPurchases.length + model.wife.paymentCoveredPurchases.length + model.wife.payments.length})` }));
       for (const item of model.wife.settledPurchases) history.append(ledgerRow(documentLike, locale, item, t(locale, 'card.outstanding'), id => options.onCommand?.({ type: 'wife/settle', payload: { id, settled: false } }), 'wife-settled'));
+      for (const item of model.wife.paymentCoveredPurchases) history.append(ledgerRow(documentLike, locale, item, null, null, 'wife-payment-covered', { note: t(locale, 'card.paymentAllocated') }));
       for (const payment of model.wife.payments) history.append(el(documentLike, 'p', { className: 'payment-history', text: `${formatDate(locale, payment.date)} — ${formatMoney(locale, payment.amount)}` }));
       wife.append(history);
     }
-    const paymentForm = el(documentLike, 'form', { className: 'inline-form', attrs: { 'data-wife-payment': '' } });
-    const amount = el(documentLike, 'input', { id: 'wife-payment-amount', type: 'number', attrs: { name: 'amount', min: '0.01', max: String(model.wife.balance), step: '0.01', inputmode: 'decimal', required: '', 'aria-label': t(locale, 'transaction.amount') } });
-    const date = el(documentLike, 'input', { id: 'wife-payment-date', type: 'date', attrs: { name: 'date', value: options.todayISO, required: '', 'aria-label': t(locale, 'transaction.date') } });
-    paymentForm.append(amount, date, el(documentLike, 'button', { className: 'button button-secondary', type: 'submit', text: t(locale, 'card.recordPayment') }));
-    paymentForm.addEventListener('submit', async event => {
-      event.preventDefault();
-      if (!paymentForm.reportValidity()) return;
-      const result = await options.onCommand?.({ type: 'wife/payment', payload: { amount: Number(amount.value), date: date.value, note: '' } });
-      if (result !== false) {
-        paymentForm.reset();
-        date.value = options.todayISO;
-      }
-    });
-    wife.append(paymentForm);
+    if (model.wife.balance > 0) {
+      const paymentForm = el(documentLike, 'form', { className: 'inline-form', attrs: { 'data-wife-payment': '' } });
+      const amount = el(documentLike, 'input', { id: 'wife-payment-amount', type: 'number', attrs: { name: 'amount', min: '0.01', max: String(model.wife.balance), step: '0.01', inputmode: 'decimal', required: '', 'aria-label': t(locale, 'transaction.amount') } });
+      const date = el(documentLike, 'input', { id: 'wife-payment-date', type: 'date', attrs: { name: 'date', value: options.todayISO, required: '', 'aria-label': t(locale, 'transaction.date') } });
+      paymentForm.append(amount, date, el(documentLike, 'button', { className: 'button button-secondary', type: 'submit', text: t(locale, 'card.recordPayment') }));
+      paymentForm.addEventListener('submit', async event => {
+        event.preventDefault();
+        if (!paymentForm.reportValidity()) return;
+        const result = await options.onCommand?.({ type: 'wife/payment', payload: { amount: Number(amount.value), date: date.value, note: '' } });
+        if (result !== false) {
+          paymentForm.reset();
+          date.value = options.todayISO;
+        }
+      });
+      wife.append(paymentForm);
+    }
     section.append(wife);
   }
 

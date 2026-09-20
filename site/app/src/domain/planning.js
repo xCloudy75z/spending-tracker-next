@@ -82,6 +82,8 @@ export function addCycle(state, draft, context = {}) {
     startDate: draft.startDate,
     endDate: draft.endDate,
     startBudget: Math.round(Number(draft.startBudget) * 100) / 100,
+    savingsTarget: Math.round(Number(draft.savingsTarget || 0) * 100) / 100,
+    savingsTreatment: draft.savingsTreatment || next.settings.savingsTreatment || 'included',
     archivedAt: null,
     createdAt: nowISO,
   };
@@ -97,7 +99,7 @@ export function addCycle(state, draft, context = {}) {
 
 export function updateSettings(state, patch) {
   const next = clone(state);
-  for (const key of ['locale', 'theme']) {
+  for (const key of ['locale', 'theme', 'salaryDay', 'savingsTreatment']) {
     if (patch[key] !== undefined) next.settings[key] = patch[key];
   }
   assertValid(next);

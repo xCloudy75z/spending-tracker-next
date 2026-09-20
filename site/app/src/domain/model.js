@@ -83,6 +83,7 @@ export function createEmptyState() {
       lastUsedCategoryId: null,
       localTimestamps: true,
       wifeTracking: true,
+      savingsTreatment: 'included',
     },
     categories: {},
     cycles: {},
@@ -118,6 +119,9 @@ export function validateState(state) {
     }
     if (typeof settings.localTimestamps !== 'boolean') addIssue(issues, 'settings.localTimestamps', 'must be boolean');
     if (typeof settings.wifeTracking !== 'boolean') addIssue(issues, 'settings.wifeTracking', 'must be boolean');
+    if (settings.savingsTreatment !== undefined && !['included', 'deduct'].includes(settings.savingsTreatment)) {
+      addIssue(issues, 'settings.savingsTreatment', 'must be included or deduct');
+    }
   }
 
   const categoryNames = new Map();
@@ -162,6 +166,12 @@ export function validateState(state) {
         addIssue(issues, path + '.endDate', 'must not be before startDate');
       }
       if (!validMoney(cycle.startBudget)) addIssue(issues, path + '.startBudget', 'must be a finite positive amount');
+      if (cycle.savingsTarget !== undefined && !validMoney(cycle.savingsTarget, true)) {
+        addIssue(issues, path + '.savingsTarget', 'must be a finite amount from 0 to 999999999.99');
+      }
+      if (cycle.savingsTreatment !== undefined && !['included', 'deduct'].includes(cycle.savingsTreatment)) {
+        addIssue(issues, path + '.savingsTreatment', 'must be included or deduct');
+      }
       if (!validOptionalInstant(cycle.archivedAt)) addIssue(issues, path + '.archivedAt', 'must be null or an ISO timestamp');
       if (!validOptionalInstant(cycle.createdAt)) addIssue(issues, path + '.createdAt', 'must be null or an ISO timestamp');
       cycleList.push({ key, cycle });

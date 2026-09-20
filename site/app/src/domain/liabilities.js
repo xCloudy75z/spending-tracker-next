@@ -36,9 +36,26 @@ export function bankSummary(state) {
 
 export function wifeSummary(state) {
   const purchases = Object.values(state?.transactions || {}).filter(transaction => transaction?.byWife);
-  const unsettledPurchases = purchases.filter(transaction => !transaction.wifeSettled).sort(newestFirst);
+  const openPurchases = purchases.filter(transaction => !transaction.wifeSettled);
   const settledPurchases = purchases.filter(transaction => transaction.wifeSettled).sort(newestFirst);
   const payments = Object.values(state?.wifePayments || {}).filter(Boolean).sort(newestFirst);
+  let unallocatedPayments = payments.reduce((sum, payment) => sum + Number(payment.amount || 0), 0);
+  const allocatedPurchases = [...openPurchases]
+    .sort((left, right) => newestFirst(right, left))
+    .map(transaction => {
+      const value = Math.max(0, signedAmount(transaction));
+      const paymentAllocated = Math.min(value, unallocatedPayments);
+      unallocatedPayments = money(unallocatedPayments - paymentAllocated);
+      const outstandingAmount = money(value - paymentAllocated);
+      return {
+        ...transaction,
+        paymentAllocated: money(paymentAllocated),
+        outstandingAmount,
+        settlementDisabled: paymentAllocated > 0,
+      };
+    });
+  const unsettledPurchases = allocatedPurchases.filter(transaction => transaction.outstandingAmount > 0).sort(newestFirst);
+  const paymentCoveredPurchases = allocatedPurchases.filter(transaction => transaction.outstandingAmount === 0).sort(newestFirst);
   const charged = purchases.reduce((sum, transaction) => sum + signedAmount(transaction), 0);
   const settled = settledPurchases.reduce((sum, transaction) => sum + signedAmount(transaction), 0);
   const paid = payments.reduce((sum, payment) => sum + Number(payment.amount || 0), 0);
@@ -47,6 +64,7 @@ export function wifeSummary(state) {
     paid: money(paid),
     balance: Math.max(0, money(charged - settled - paid)),
     unsettledPurchases,
+    paymentCoveredPurchases,
     settledPurchases,
     payments,
   };

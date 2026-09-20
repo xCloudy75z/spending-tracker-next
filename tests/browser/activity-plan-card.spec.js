@@ -72,9 +72,15 @@ test('Activity keeps search focus and accepts real sequential typing', async ({ 
   await page.locator('[data-route="activity"]').click();
   const search = page.getByLabel('Search');
   await search.pressSequentially('cafe', { delay: 40 });
+  await page.waitForTimeout(250);
   await expect(page.getByLabel('Search')).toBeFocused();
   await expect(page.getByLabel('Search')).toHaveValue('cafe');
   await expect(page.locator('[data-result-count]')).toHaveText('3');
+  await page.getByLabel('Search').pressSequentially(' lunch', { delay: 25 });
+  await page.waitForTimeout(250);
+  await expect(page.getByLabel('Search')).toBeFocused();
+  await expect(page.getByLabel('Search')).toHaveValue('cafe lunch');
+  await expect(page.locator('[data-result-count]')).toHaveText('1');
 });
 
 test('Plan recovers from zero categories and cycles, then creates both', async ({ page }) => {
@@ -116,6 +122,35 @@ test('Plan atomically reassigns a referenced category and rolls to a non-overlap
   await expect(page.locator('.cycle-summary')).toContainText('Sep');
 });
 
+test('Plan persists a reusable cycle-start day and savings treatment', async ({ page }) => {
+  await seed(page);
+  await page.locator('[data-route="plan"]').click();
+  await page.locator('[data-setting-cycle-start]').fill('12');
+  await page.locator('[data-setting-cycle-start]').blur();
+  await page.locator('[data-setting-savings]').selectOption('deduct');
+  const stored = await page.evaluate(() => JSON.parse(localStorage.getItem('spending-tracker-next:state:v1')));
+  expect(stored.settings).toMatchObject({ salaryDay: 12, savingsTreatment: 'deduct' });
+
+  await page.locator('.rollover summary').click();
+  await page.locator('#rollover-savings').fill('200');
+  await page.locator('[data-rollover]').getByRole('button', { name: 'Start next cycle' }).click();
+  const updated = await page.evaluate(() => JSON.parse(localStorage.getItem('spending-tracker-next:state:v1')));
+  const future = Object.values(updated.cycles).find(cycle => cycle.id !== 'aug' && cycle.id !== 'sep');
+  expect(future).toMatchObject({ savingsTarget: 200, savingsTreatment: 'deduct' });
+});
+
+test('Card allocates aggregate wife payments without leaving false full-balance actions', async ({ page }) => {
+  const state = readyState();
+  state.wifePayments.partial = { id: 'partial', amount: 25, date: '2026-09-20', note: '', createdAt: '2026-09-20T12:00:00Z' };
+  await seed(page, state);
+  await page.locator('[data-route="card"]').click();
+  await expect(page.locator('[data-wife-total]')).toContainText('50');
+  const row = page.locator('[data-ledger-kind="wife"][data-ledger-id="wife"]');
+  await expect(row).toContainText('50');
+  await expect(row.getByRole('button')).toBeDisabled();
+  await expect(row).toContainText('recorded payment');
+});
+
 test('Card bank and wife settlements remain independent and wife mode normalizes safely', async ({ page }) => {
   await seed(page);
   await page.locator('[data-route="card"]').click();
@@ -127,6 +162,7 @@ test('Card bank and wife settlements remain independent and wife mode normalizes
   const storedAfterWife = await page.evaluate(() => JSON.parse(localStorage.getItem('spending-tracker-next:state:v1')));
   expect(storedAfterWife.transactions.wife.liabilitySettled).toBe(false);
   expect(storedAfterWife.transactions.wife.wifeSettled).toBe(true);
+  await expect(page.locator('[data-wife-payment]')).toHaveCount(0);
   await page.locator('[data-route="plan"]').click();
   await page.locator('[data-setting-wife]').uncheck();
   await page.locator('[data-route="card"]').click();

@@ -64,6 +64,7 @@ export function migrateOriginalV1(input, options = {}) {
       lastUsedCategoryId: source.settings?.lastUsedCategoryId ?? settingsDefaults.lastUsedCategoryId,
       localTimestamps: source.settings?.localTimestamps ?? settingsDefaults.localTimestamps,
       wifeTracking: source.settings?.wifeTracking ?? settingsDefaults.wifeTracking,
+      savingsTreatment: source.settings?.savingsTreatment ?? settingsDefaults.savingsTreatment,
     },
     categories: {},
     cycles: {},
@@ -105,6 +106,8 @@ export function migrateOriginalV1(input, options = {}) {
       startDate: original.startDate,
       endDate: original.endDate,
       startBudget: original.startBudget,
+      savingsTarget: original.savingsTarget ?? 0,
+      savingsTreatment: original.savingsTreatment ?? source.settings?.savingsTreatment ?? settingsDefaults.savingsTreatment,
       archivedAt: original.archivedAt ?? null,
       createdAt: original.createdAt ?? nowISO,
     };

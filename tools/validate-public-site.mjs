@@ -114,6 +114,18 @@ export async function validatePublicSite(rootDir) {
     if (!evidenceHtml.includes(`data-version="${results.version}"`)) errors.push('evidence/index.html: version claim does not match results.json');
     if (!evidenceHtml.includes(`data-declarations="${results.declarationCount}"`)) errors.push('evidence/index.html: declaration claim does not match results.json');
     if (!evidenceHtml.includes(`data-executions="${results.executionCount}"`)) errors.push('evidence/index.html: execution claim does not match results.json');
+    for (const [suite, count] of Object.entries(results.suites || {})) {
+      if (suite === 'browserExecutions') continue;
+      const value = suite === 'browserDeclarations' ? `${count} × ${results.browserMatrix.length}` : String(count);
+      if (!evidenceHtml.includes(`data-evidence-suite="${suite}">${value}</td>`)) {
+        errors.push(`evidence/index.html: ${suite} claim does not match results.json`);
+      }
+    }
+    for (const project of results.browserMatrix || []) {
+      if (!evidenceHtml.includes(`data-evidence-project="${project.project}">${project.executions}</td>`)) {
+        errors.push(`evidence/index.html: ${project.project} claim does not match results.json`);
+      }
+    }
     if (!evidenceHtml.includes('data-audit-map')) errors.push('evidence/index.html: missing audit finding map');
     if (!evidenceHtml.includes('href="https://github.com/xCloudy75z/spending-tracker-next"')) errors.push('evidence/index.html: missing repository source link');
   } catch (error) {

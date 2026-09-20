@@ -1,8 +1,9 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { createPlanModel } from '../../site/app/src/ui/plan.js';
+import { createPlanModel, preferredCycleStart } from '../../site/app/src/ui/plan.js';
 import { createCardModel } from '../../site/app/src/ui/card.js';
 import { createEmptyState } from '../../site/app/src/domain/model.js';
+import { updateSettings } from '../../site/app/src/domain/planning.js';
 
 test('Plan exposes a recoverable first-run path when cycle or categories are missing', () => {
   const model = createPlanModel(createEmptyState(), '2026-09-20');
@@ -36,6 +37,23 @@ test('Plan derives the current cycle from today instead of a scheduled active id
   const model = createPlanModel(state, '2026-09-20');
   assert.equal(model.activeCycle.id, 'current');
   assert.equal(model.categories[0].spent, 25);
+});
+
+test('Plan settings and cycle savings treatment affect the spendable allowance', () => {
+  const state = createEmptyState();
+  const configured = updateSettings(state, { salaryDay: 12, savingsTreatment: 'deduct' });
+  assert.equal(configured.settings.salaryDay, 12);
+  assert.equal(configured.settings.savingsTreatment, 'deduct');
+  configured.cycles.current = {
+    id: 'current', startDate: '2026-09-01', endDate: '2026-09-30',
+    startBudget: 2500, savingsTarget: 400, savingsTreatment: 'deduct',
+  };
+  configured.settings.activeCycleId = 'current';
+  const model = createPlanModel(configured, '2026-09-20');
+  assert.equal(model.spendableAllowance, 2100);
+  assert.equal(model.unallocated, 2100);
+  assert.equal(preferredCycleStart('2026-09-20', 12), '2026-09-12');
+  assert.equal(preferredCycleStart('2026-09-05', 12), '2026-08-12');
 });
 
 test('Card keeps bank obligations and wife reimbursements independent', () => {

@@ -112,6 +112,14 @@ async function updateEvidenceHtml(file, summary) {
     .replace(/data-executions="\d+"/, `data-executions="${summary.executionCount}"`)
     .replace(/(<strong data-evidence-value="declarations">)\d+(<\/strong>)/, `$1${summary.declarationCount}$2`)
     .replace(/(<strong data-evidence-value="executions">)\d+(<\/strong>)/, `$1${summary.executionCount}$2`);
+  for (const [suite, count] of Object.entries(summary.suites)) {
+    if (suite === 'browserExecutions') continue;
+    const value = suite === 'browserDeclarations' ? `${count} × ${summary.browserMatrix.length}` : String(count);
+    html = html.replace(new RegExp(`(<td data-evidence-suite="${suite}">)[^<]+(<\\/td>)`), `$1${value}$2`);
+  }
+  for (const project of summary.browserMatrix) {
+    html = html.replace(new RegExp(`(<td data-evidence-project="${project.project}">)[^<]+(<\\/td>)`), `$1${project.executions}$2`);
+  }
   await writeFile(file, html);
 }
 

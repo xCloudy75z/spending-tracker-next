@@ -68,7 +68,7 @@ export function openBackupDialog(options) {
       inspected = options.store.previewRestore(await selected.text());
       preview.append(
         el(documentLike, 'strong', { text: `${t(locale, 'backup.preview')}: ${inspected.sourceVersion}` }),
-        el(documentLike, 'p', { text: `${inspected.counts.transactions} transactions · ${inspected.counts.categories} categories · ${inspected.counts.cycles} cycles` }),
+        el(documentLike, 'p', { text: t(locale, 'backup.previewCounts', inspected.counts) }),
         el(documentLike, 'p', { text: inspected.warnings.join(' ') || t(locale, 'backup.restoreWarning') }),
       );
       replace.disabled = false;
@@ -87,10 +87,10 @@ export function openBackupDialog(options) {
       await options.store.commitRestore(inspected);
       markBackup();
       busy = false;
-      announce(documentLike, t(locale, 'backup.restoreSuccessCounts', {
-        transactions: inspected.counts.transactions,
-        categories: inspected.counts.categories,
-        cycles: inspected.counts.cycles,
+      announce(documentLike, t(locale, 'backup.restoreReport', {
+        accepted: Object.values(inspected.counts).reduce((sum, count) => sum + count, 0),
+        normalized: inspected.warnings.length,
+        rejected: 0,
       }));
       finish();
     } catch {

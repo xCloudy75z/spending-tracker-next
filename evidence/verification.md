@@ -3,9 +3,9 @@
 ## Clean-room rehearsal
 
 - Date: 2026-09-20
-- Final evidence generated: 2026-09-20T11:55:46.815Z
+- Final evidence generated: 2026-09-20T12:26:54.424Z
 - Source commit at rehearsal start: `3ea64fe38aeafdf793b33e00b9d6bcda7423d4a3`
-- Final release-engineering commit verified: `35f7e839fd46a7da69e34a874ed3c0d2a2f3e518`
+- Final audited candidate verified: `cefa145781a3e8de4d91dae22307f6c948f28510`
 - Platform: Windows, Node.js 25.9.0, npm 11.12.1
 - Result: **PASS**
 
@@ -21,11 +21,11 @@ npm run verify
 `npm ci` installed 13 packages and reported zero vulnerabilities. The final verifier reported:
 
 ```text
-60 unit tests passed
+67 unit tests passed
 10 integration tests passed
-6 site and accounting tests passed
-90 browser executions passed
-Exact test accounting: 106 declarations, 166 executions.
+7 site and accounting tests passed
+114 browser executions passed
+Exact test accounting: 122 declarations, 198 executions.
 Public site valid (7 HTML files checked).
 [verify] all release checks passed
 ```
@@ -34,9 +34,9 @@ Public site valid (7 HTML files checked).
 
 | Project | Engine / viewport | Declarations | Executions | Result |
 |---|---|---:|---:|---|
-| desktop-chromium | Chromium, 1440 × 1000 | 30 | 30 | Pass |
-| iphone-webkit | WebKit, iPhone 13 portrait | 30 | 30 | Pass |
-| iphone-landscape-webkit | WebKit, iPhone 13 landscape | 30 | 30 | Pass |
+| desktop-chromium | Chromium, 1440 × 1000 | 38 | 38 | Pass |
+| iphone-webkit | WebKit, iPhone 13 portrait | 38 | 38 | Pass |
+| iphone-landscape-webkit | WebKit, iPhone 13 landscape | 38 | 38 | Pass |
 
 The browser suite includes complete primary journeys, persistence, transaction safeguards, card and reimbursement separation, backup/restore, CSV export, SMS review, Arabic RTL, dark mode, fixed-navigation reachability, PWA metadata, service-worker cache isolation, and automated accessibility scans with no serious or critical axe findings.
 
@@ -48,7 +48,7 @@ On Windows, Playwright WebKit does not expose the same context-level offline tog
 
 ## Visual review
 
-The app was reviewed at desktop Chromium, iPhone 13 portrait, and iPhone 13 landscape sizes. The six public hub pages were separately captured at desktop and iPhone sizes under `evidence/screenshots/hub/`. The capture tool rejects horizontal overflow before saving each page.
+The app was reviewed at desktop Chromium, iPhone 13 portrait, and iPhone 13 landscape sizes. Evidence covers all four destinations in light English, dark English, and Arabic RTL, plus transaction/backup dialogs and corrupt-storage recovery. The six public hub pages were separately captured at desktop and iPhone sizes under `evidence/screenshots/hub/`. The capture tool rejects horizontal overflow before saving each page.
 
 ## Release decision
 

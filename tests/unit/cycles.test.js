@@ -65,3 +65,11 @@ test('refunds increase and excluded purchases do not change safe-to-spend', () =
   assert.equal(model.safeToSpend, 36.36);
   assert.equal(model.remainingBalance, 400);
 });
+
+test('deduct-first savings reduce the canonical Today budget', () => {
+  const state = stateWithCycle({ startBudget: 3000, savingsTarget: 600, savingsTreatment: 'deduct' });
+  const model = deriveToday(state, '2026-09-20');
+  assert.equal(model.budget, 2400);
+  assert.equal(model.remainingBalance, 2400);
+  assert.equal(model.safeToSpend, 218.18);
+});

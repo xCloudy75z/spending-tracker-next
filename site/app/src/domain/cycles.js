@@ -9,6 +9,12 @@ function signedAmount(transaction) {
   return transaction.isRefund ? -amount : amount;
 }
 
+export function effectiveCycleBudget(cycle) {
+  const budget = money(cycle?.startBudget || 0);
+  const savings = cycle?.savingsTreatment === 'deduct' ? money(cycle?.savingsTarget || 0) : 0;
+  return Math.max(0, money(budget - savings));
+}
+
 export function cycleForDate(state, dateISO) {
   if (!isValidISODate(dateISO)) throw new TypeError(`invalid ISO date: ${dateISO}`);
   const cycles = Object.values(state?.cycles || {}).filter(Boolean);
@@ -64,7 +70,7 @@ export function deriveToday(state, todayISO) {
   const spentBefore = money(beforeToday.reduce((sum, transaction) => sum + signedAmount(transaction), 0));
   const spentToDate = money(throughToday.reduce((sum, transaction) => sum + signedAmount(transaction), 0));
   const spentToday = money(todayTransactions.reduce((sum, transaction) => sum + signedAmount(transaction), 0));
-  const budget = money(cycle.startBudget);
+  const budget = effectiveCycleBudget(cycle);
   const remainingBalance = money(budget - totalSpent);
   const daysRemaining = daysInclusive(todayISO, cycle.endDate);
   const dailyLimit = daysRemaining > 0 ? money((budget - spentBefore) / daysRemaining) : 0;

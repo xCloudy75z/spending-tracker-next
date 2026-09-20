@@ -129,11 +129,20 @@ export function renderActivity(container, state, options = {}) {
   const cycle = el(documentLike, 'select', { attrs: { 'aria-label': t(locale, 'plan.cycleDates') } });
   cycle.append(option(documentLike, '', t(locale, 'activity.all'), model.filters.cycleId));
   for (const item of model.cycles) cycle.append(option(documentLike, item.id, `${item.startDate} — ${item.endDate}`, model.filters.cycleId));
-  const apply = () => options.onFilters?.({ search: search.value, type: type.value, categoryId: category.value, cycleId: cycle.value });
+  const apply = (restoreSearchFocus = false) => {
+    const selectionStart = search.selectionStart;
+    const selectionEnd = search.selectionEnd;
+    options.onFilters?.({ search: search.value, type: type.value, categoryId: category.value, cycleId: cycle.value });
+    if (restoreSearchFocus) queueMicrotask(() => {
+      const replacement = container.querySelector('input[type="search"]');
+      replacement?.focus();
+      replacement?.setSelectionRange(selectionStart, selectionEnd);
+    });
+  };
   let searchTimer = null;
   search.addEventListener('input', () => {
     clearTimeout(searchTimer);
-    searchTimer = setTimeout(apply, 150);
+    searchTimer = setTimeout(() => apply(true), 150);
   });
   type.addEventListener('change', apply);
   category.addEventListener('change', apply);
