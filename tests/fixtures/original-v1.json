@@ -1,0 +1,138 @@
+{
+  "schemaVersion": 1,
+  "settings": {
+    "currency": "AED",
+    "salaryDay": 1,
+    "theme": "system",
+    "activeCycleId": "cycle-sep",
+    "locale": "en",
+    "lastUsedCategoryId": "cat-food",
+    "localTimestamps": true,
+    "wifeTracking": true
+  },
+  "categories": {
+    "cat-food": {
+      "id": "cat-food",
+      "name": "TEST DATA Food",
+      "icon": "🍲",
+      "color": "#2E7D70",
+      "order": 0,
+      "isArchived": false,
+      "createdAt": "2026-08-01T09:00:00.000+04:00",
+      "budget": 900,
+      "budgetPeriod": "monthly"
+    },
+    "cat-other": {
+      "id": "cat-other",
+      "name": "TEST DATA Other",
+      "icon": "•",
+      "color": "#6B7780",
+      "order": 1,
+      "isArchived": false,
+      "createdAt": "2026-08-01T09:00:00.000+04:00",
+      "budget": 1200,
+      "budgetPeriod": "yearly"
+    }
+  },
+  "cycles": {
+    "cycle-aug": {
+      "id": "cycle-aug",
+      "startDate": "2026-08-01",
+      "endDate": "2026-08-31",
+      "startBudget": 3000,
+      "archivedAt": "2026-09-01T00:00:00.000+04:00",
+      "createdAt": "2026-08-01T09:00:00.000+04:00"
+    },
+    "cycle-sep": {
+      "id": "cycle-sep",
+      "startDate": "2026-09-01",
+      "endDate": "2026-09-30",
+      "startBudget": 3200,
+      "archivedAt": null,
+      "createdAt": "2026-09-01T09:00:00.000+04:00"
+    }
+  },
+  "transactions": {
+    "txn-expense": {
+      "id": "txn-expense",
+      "cycleId": "cycle-aug",
+      "categoryId": "cat-food",
+      "date": "2026-08-12",
+      "amount": 125,
+      "isRefund": false,
+      "isExcludedFromPace": false,
+      "isCredit": false,
+      "liabilitySettled": false,
+      "settledAt": null,
+      "byWife": false,
+      "wifeSettled": false,
+      "wifeSettledAt": null,
+      "note": "TEST DATA groceries",
+      "createdAt": "2026-08-12T18:30:00.000+04:00",
+      "updatedAt": "2026-08-12T18:30:00.000+04:00"
+    },
+    "txn-refund": {
+      "id": "txn-refund",
+      "cycleId": "cycle-aug",
+      "categoryId": "cat-food",
+      "date": "2026-08-15",
+      "amount": 25,
+      "isRefund": true,
+      "isExcludedFromPace": false,
+      "isCredit": false,
+      "liabilitySettled": false,
+      "settledAt": null,
+      "byWife": false,
+      "wifeSettled": false,
+      "wifeSettledAt": null,
+      "note": "TEST DATA refund",
+      "createdAt": "2026-08-15T11:10:00.000+04:00",
+      "updatedAt": "2026-08-15T11:10:00.000+04:00"
+    },
+    "txn-credit": {
+      "id": "txn-credit",
+      "cycleId": "cycle-sep",
+      "categoryId": "cat-other",
+      "date": "2026-09-05",
+      "amount": 200,
+      "isRefund": false,
+      "isExcludedFromPace": false,
+      "isCredit": true,
+      "liabilitySettled": false,
+      "settledAt": null,
+      "byWife": false,
+      "wifeSettled": false,
+      "wifeSettledAt": null,
+      "note": "TEST DATA appliance",
+      "createdAt": "2026-09-05T14:00:00.000+04:00",
+      "updatedAt": "2026-09-05T14:00:00.000+04:00"
+    },
+    "txn-wife": {
+      "id": "txn-wife",
+      "cycleId": "cycle-sep",
+      "categoryId": "cat-food",
+      "date": "2026-09-07",
+      "amount": 75,
+      "isRefund": false,
+      "isExcludedFromPace": true,
+      "isCredit": true,
+      "liabilitySettled": false,
+      "settledAt": null,
+      "byWife": true,
+      "wifeSettled": false,
+      "wifeSettledAt": null,
+      "note": "TEST DATA reimbursable",
+      "createdAt": "2026-09-07T16:20:00.000+04:00",
+      "updatedAt": "2026-09-07T16:20:00.000+04:00"
+    }
+  },
+  "wifePayments": {
+    "wife-payment-1": {
+      "id": "wife-payment-1",
+      "amount": 20,
+      "date": "2026-09-10",
+      "note": "TEST DATA partial repayment",
+      "createdAt": "2026-09-10T20:00:00.000+04:00"
+    }
+  }
+}

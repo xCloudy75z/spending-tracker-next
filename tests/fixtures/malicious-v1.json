@@ -1,0 +1,41 @@
+{
+  "schemaVersion": 1,
+  "settings": {
+    "currency": "AED",
+    "salaryDay": 1,
+    "theme": "system",
+    "activeCycleId": "cycle-1",
+    "locale": "en"
+  },
+  "categories": {
+    "bad": {
+      "id": "bad",
+      "name": "<img src=x onerror=alert(1)>",
+      "icon": "x",
+      "color": "red; background:url(javascript:alert(1))",
+      "order": 0,
+      "isArchived": false,
+      "budget": 0,
+      "budgetPeriod": "monthly"
+    }
+  },
+  "cycles": {
+    "cycle-1": {
+      "id": "cycle-1",
+      "startDate": "2026-09-01",
+      "endDate": "2026-09-30",
+      "startBudget": 1000
+    }
+  },
+  "transactions": {
+    "bad": {
+      "id": "txn-bad",
+      "cycleId": "cycle-1",
+      "categoryId": "missing-category",
+      "date": "2026-09-20",
+      "amount": 10,
+      "note": "unsafe"
+    }
+  },
+  "wifePayments": {}
+}
