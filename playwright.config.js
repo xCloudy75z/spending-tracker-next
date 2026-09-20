@@ -3,6 +3,7 @@ import { defineConfig, devices } from '@playwright/test';
 
 process.env.PLAYWRIGHT_BROWSERS_PATH ||= path.join(process.cwd(), '.playwright-browsers');
 const externalBaseURL = process.env.PLAYWRIGHT_BASE_URL;
+const baseURL = `${externalBaseURL || 'http://127.0.0.1:4173'}/`.replace(/\/{2,}$/, '/');
 
 export default defineConfig({
   testDir: './tests/browser',
@@ -13,7 +14,7 @@ export default defineConfig({
     ['json', { outputFile: 'evidence/reports/playwright.json' }],
   ],
   use: {
-    baseURL: externalBaseURL || 'http://127.0.0.1:4173',
+    baseURL,
     headless: true,
     locale: 'en-AE',
     timezoneId: 'Asia/Dubai',

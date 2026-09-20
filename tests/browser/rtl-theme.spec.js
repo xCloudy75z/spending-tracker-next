@@ -11,7 +11,7 @@ test('Arabic RTL preserves data, navigation order, mixed notes, and readable AED
     wifePayments: {},
   };
   await page.addInitScript(initial => localStorage.setItem('spending-tracker-next:state:v1', JSON.stringify(initial)), value);
-  await page.goto('/app/');
+  await page.goto('app/');
   await expect(page.locator('html')).toHaveAttribute('lang', 'ar');
   await expect(page.locator('html')).toHaveAttribute('dir', 'rtl');
   await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');

@@ -18,7 +18,7 @@ function state() {
 
 test('SMS review separates duplicate, declined, and unknown rows before atomic backdated import', async ({ page }) => {
   await page.addInitScript(value => localStorage.setItem('spending-tracker-next:state:v1', JSON.stringify(value)), state());
-  await page.goto('/app/');
+  await page.goto('app/');
   await page.locator('[data-save-state]').click();
   await page.locator('[data-open-sms]').click();
   await page.locator('#sms-input').fill([APPROVED, DECLINED, APPROVED, 'unknown message'].join('\n'));

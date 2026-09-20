@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 
 test('offline cold launch and every primary route work from the scoped cache', async ({ page, context }, testInfo) => {
-  await page.goto('/app/');
+  await page.goto('app/');
   await page.evaluate(() => navigator.serviceWorker.ready);
   await page.reload();
   await expect.poll(() => page.evaluate(() => Boolean(navigator.serviceWorker.controller))).toBe(true);

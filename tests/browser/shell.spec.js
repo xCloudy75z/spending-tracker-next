@@ -4,7 +4,7 @@ import { readFile } from 'node:fs/promises';
 const original = await readFile(new URL('../fixtures/original-v1.json', import.meta.url));
 
 test('application shell is semantic and hash navigation follows browser history', async ({ page }) => {
-  await page.goto('/app/');
+  await page.goto('app/');
   await expect(page.locator('main')).toHaveCount(1);
   await expect(page.locator('nav[aria-label="Primary"]')).toHaveCount(1);
   await expect(page.locator('[data-route="today"]')).toHaveAttribute('aria-current', 'page');
@@ -16,7 +16,7 @@ test('application shell is semantic and hash navigation follows browser history'
 });
 
 test('skip link is first in keyboard order and moves focus to main content', async ({ page }, testInfo) => {
-  await page.goto('/app/');
+  await page.goto('app/');
   if (testInfo.project.name.startsWith('iphone')) {
     await page.locator('.skip-link').focus();
   } else {
@@ -28,7 +28,7 @@ test('skip link is first in keyboard order and moves focus to main content', asy
 });
 
 test('reload retains valid local state without writing first-run defaults', async ({ page }) => {
-  await page.goto('/app/');
+  await page.goto('app/');
   const empty = {
     schemaVersion: 1,
     settings: {
@@ -52,7 +52,7 @@ test('storage denial shows recovery guidance and still permits backup inspection
       throw error;
     };
   });
-  await page.goto('/app/');
+  await page.goto('app/');
   await expect(page.locator('[data-storage-error]')).toBeVisible();
   await expect(page.locator('input[type="file"][data-backup-inspect]')).toBeVisible();
   await expect(page.locator('[data-save-state]')).toHaveAttribute('aria-disabled', 'true');
@@ -64,7 +64,7 @@ test('corrupt storage can preview and restore a validated backup', async ({ page
     localStorage.setItem('spending-tracker-next:state:v1', '{broken');
     sessionStorage.setItem('corrupt-seeded', 'true');
   });
-  await page.goto('/app/');
+  await page.goto('app/');
   await page.locator('[data-backup-inspect]').setInputFiles({ name: 'backup.json', mimeType: 'application/json', buffer: original });
   await expect(page.locator('[data-storage-recovery-preview]')).toContainText('4 transactions');
   await page.locator('[data-storage-recovery-restore]').click();
@@ -74,7 +74,7 @@ test('corrupt storage can preview and restore a validated backup', async ({ page
 });
 
 test('failed Plan persistence preserves form input and announces failure', async ({ page }) => {
-  await page.goto('/app/');
+  await page.goto('app/');
   await page.locator('[data-route="plan"]').click();
   await page.locator('#category-name').fill('Keep this value');
   await page.locator('#category-budget').fill('100');

@@ -31,7 +31,7 @@ async function seed(page, state = baseState()) {
   await page.addInitScript(value => {
     localStorage.setItem('spending-tracker-next:state:v1', JSON.stringify(value));
   }, state);
-  await page.goto('/app/');
+  await page.goto('app/');
 }
 
 test('Today leads with safe-to-spend, one pace line, and text-safe activity', async ({ page }) => {

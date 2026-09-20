@@ -22,7 +22,7 @@ test('visual evidence captures all primary screens without horizontal clipping',
   await page.addInitScript(value => {
     if (!localStorage.getItem('spending-tracker-next:state:v1')) localStorage.setItem('spending-tracker-next:state:v1', JSON.stringify(value));
   }, visualState);
-  await page.goto('/app/');
+  await page.goto('app/');
   const output = path.join(process.cwd(), 'evidence', 'screenshots');
   await mkdir(output, { recursive: true });
   for (const route of ['today', 'activity', 'plan', 'card']) {

@@ -21,7 +21,7 @@ function state() {
 
 async function seed(page) {
   await page.addInitScript(value => localStorage.setItem('spending-tracker-next:state:v1', JSON.stringify(value)), state());
-  await page.goto('/app/');
+  await page.goto('app/');
 }
 
 test('transaction creation is keyboard usable and a rapid double submit creates one record', async ({ page }) => {

@@ -1,9 +1,9 @@
 import { test, expect } from '@playwright/test';
 
 test('mixed-script notes render as isolated text, never HTML', async ({ page }) => {
-  await page.goto('/');
+  await page.goto('./');
   const result = await page.evaluate(async () => {
-    const { text } = await import('/app/src/ui/dom.js');
+    const { text } = await import('./app/src/ui/dom.js');
     const node = text(document, '<img src=x onerror=alert(1)> مرحبا');
     document.body.append(node);
     return {
@@ -20,9 +20,9 @@ test('mixed-script notes render as isolated text, never HTML', async ({ page }) 
 });
 
 test('dialog traps dismissal while busy and restores opener focus', async ({ page }) => {
-  await page.goto('/');
+  await page.goto('./');
   await page.evaluate(async () => {
-    const { createDialog, el } = await import('/app/src/ui/dom.js');
+    const { createDialog, el } = await import('./app/src/ui/dom.js');
     const opener = el(document, 'button', { text: 'Open', id: 'opener' });
     document.body.append(opener);
     opener.focus();
@@ -46,13 +46,13 @@ test('dialog traps dismissal while busy and restores opener focus', async ({ pag
 });
 
 test('announcements expose priority and controls meet the touch target floor', async ({ page }) => {
-  await page.goto('/');
+  await page.goto('./');
   await page.evaluate(async () => {
     const link = document.createElement('link');
     link.rel = 'stylesheet';
-    link.href = '/app/assets/app.css';
+    link.href = './app/assets/app.css';
     document.head.append(link);
-    const { announce, el } = await import('/app/src/ui/dom.js');
+    const { announce, el } = await import('./app/src/ui/dom.js');
     const button = el(document, 'button', { className: 'icon-button', text: 'Add' });
     document.body.append(button);
     announce(document, 'Saved', 'assertive');

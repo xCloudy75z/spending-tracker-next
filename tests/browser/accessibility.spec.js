@@ -17,7 +17,7 @@ async function seed(page, value = state()) {
     localStorage.setItem('spending-tracker-next:state:v1', JSON.stringify(initial));
     sessionStorage.setItem('accessibility-seeded', 'true');
   }, value);
-  await page.goto('/app/');
+  await page.goto('app/');
 }
 
 async function expectNoSeriousViolations(page) {

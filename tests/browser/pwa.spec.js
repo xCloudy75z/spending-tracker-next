@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 
 test('PWA manifest, icons, scope, and unrelated shared-origin cache isolation are valid', async ({ page }) => {
-  await page.goto('/app/');
+  await page.goto('app/');
   const result = await page.evaluate(async () => {
     await caches.open('rem-money-unrelated-cache').then(cache => cache.put('/unrelated', new Response('keep')));
     const registration = await navigator.serviceWorker.ready;
@@ -22,7 +22,7 @@ test('PWA manifest, icons, scope, and unrelated shared-origin cache isolation ar
 });
 
 test('an interrupted worker upgrade retains v1 and v2 activates only after an explicit message', async ({ page }) => {
-  await page.goto('/app/');
+  await page.goto('app/');
   const result = await page.evaluate(async () => {
     const scope = './update-fixture/';
     const waitForState = (worker, state) => new Promise((resolve, reject) => {

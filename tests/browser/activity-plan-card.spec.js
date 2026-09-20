@@ -45,7 +45,7 @@ function readyState() {
 
 async function seed(page, state = readyState()) {
   await page.addInitScript(value => localStorage.setItem('spending-tracker-next:state:v1', JSON.stringify(value)), state);
-  await page.goto('/app/');
+  await page.goto('app/');
 }
 
 test('Activity combines search and filters, preserves results after editing, and confirms deletion', async ({ page }) => {

@@ -9,7 +9,7 @@ test('break testing rejects zero, negative, and excessive transaction amounts', 
     transactions: {}, wifePayments: {},
   };
   await page.addInitScript(initial => localStorage.setItem('spending-tracker-next:state:v1', JSON.stringify(initial)), state);
-  await page.goto('/app/');
+  await page.goto('app/');
   await page.locator('[data-add-transaction]').click();
   for (const amount of ['0', '-1', '1000000000']) {
     await page.locator('#transaction-amount').fill(amount);
@@ -20,7 +20,7 @@ test('break testing rejects zero, negative, and excessive transaction amounts', 
 });
 
 test('break testing keeps the last control reachable above fixed navigation', async ({ page }) => {
-  await page.goto('/app/');
+  await page.goto('app/');
   await page.locator('[data-route="plan"]').click();
   const control = page.locator('[data-backup-import]');
   await expect(page.locator('[data-view="plan"]')).toBeVisible();
