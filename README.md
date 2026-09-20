@@ -54,7 +54,7 @@ Run the complete release gate with:
 npm run verify
 ```
 
-The gate validates the static site, runs 67 unit tests, 10 integration tests, 7 site/accounting tests, and 38 browser declarations across desktop Chromium plus iPhone WebKit portrait and landscape. It then generates and validates exact machine-readable evidence. At version 1.0.0 this is **122 distinct declarations and 198 executions**.
+The gate validates the static site, runs 67 unit tests, 10 integration tests, 8 site/accounting tests, and 38 browser declarations across desktop Chromium plus iPhone WebKit portrait and landscape. It then generates and validates exact machine-readable evidence. At version 1.0.0 this is **123 distinct declarations and 199 executions**.
 
 ## Repository map
 

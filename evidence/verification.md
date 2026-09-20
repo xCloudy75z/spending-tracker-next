@@ -3,9 +3,9 @@
 ## Clean-room rehearsal
 
 - Date: 2026-09-20
-- Final evidence generated: 2026-09-20T12:44:02.743Z
+- Final evidence generated: 2026-09-20T12:52:33.020Z
 - Source commit at rehearsal start: `3ea64fe38aeafdf793b33e00b9d6bcda7423d4a3`
-- Final audited candidate verified: `ed97d85149ac246c0c094baa1e24a1e24653d913`
+- Final audited candidate verified: `a49137ce34386da51a7c55c510133d7efcc415fe`
 - Platform: Windows, Node.js 25.9.0, npm 11.12.1
 - Result: **PASS**
 
@@ -23,9 +23,9 @@ npm run verify
 ```text
 67 unit tests passed
 10 integration tests passed
-7 site and accounting tests passed
+8 site and accounting tests passed
 114 browser executions passed
-Exact test accounting: 122 declarations, 198 executions.
+Exact test accounting: 123 declarations, 199 executions.
 Public site valid (7 HTML files checked).
 [verify] all release checks passed
 ```

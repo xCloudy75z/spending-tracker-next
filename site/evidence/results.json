@@ -1,14 +1,14 @@
 {
   "version": "1.0.0",
-  "commit": "ed97d85149ac246c0c094baa1e24a1e24653d913",
-  "generatedAt": "2026-09-20T12:44:02.743Z",
-  "declarationCount": 122,
-  "caseCount": 122,
-  "executionCount": 198,
+  "commit": "a49137ce34386da51a7c55c510133d7efcc415fe",
+  "generatedAt": "2026-09-20T12:52:33.020Z",
+  "declarationCount": 123,
+  "caseCount": 123,
+  "executionCount": 199,
   "suites": {
     "unit": 67,
     "integration": 10,
-    "site": 7,
+    "site": 8,
     "browserDeclarations": 38,
     "browserExecutions": 114
   },
