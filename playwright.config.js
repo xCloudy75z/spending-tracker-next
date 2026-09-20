@@ -2,6 +2,7 @@ import path from 'node:path';
 import { defineConfig, devices } from '@playwright/test';
 
 process.env.PLAYWRIGHT_BROWSERS_PATH ||= path.join(process.cwd(), '.playwright-browsers');
+const externalBaseURL = process.env.PLAYWRIGHT_BASE_URL;
 
 export default defineConfig({
   testDir: './tests/browser',
@@ -12,7 +13,7 @@ export default defineConfig({
     ['json', { outputFile: 'evidence/reports/playwright.json' }],
   ],
   use: {
-    baseURL: 'http://127.0.0.1:4173',
+    baseURL: externalBaseURL || 'http://127.0.0.1:4173',
     headless: true,
     locale: 'en-AE',
     timezoneId: 'Asia/Dubai',
@@ -34,10 +35,12 @@ export default defineConfig({
       use: { ...devices['iPhone 13 landscape'], browserName: 'webkit', locale: 'en-AE', timezoneId: 'Asia/Dubai' },
     },
   ],
-  webServer: {
-    command: 'npm run serve',
-    url: 'http://127.0.0.1:4173',
-    reuseExistingServer: false,
-    timeout: 30_000,
-  },
+  webServer: externalBaseURL
+    ? undefined
+    : {
+        command: 'npm run serve',
+        url: 'http://127.0.0.1:4173',
+        reuseExistingServer: false,
+        timeout: 30_000,
+      },
 });

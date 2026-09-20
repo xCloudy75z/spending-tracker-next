@@ -18,7 +18,7 @@ This checklist records the release state of the standalone `spending-tracker-nex
 | CSV is safe and never misreported as a restorable backup | Proven | CSV formula-neutralization/type tests and backup-health browser regression |
 | English/Arabic RTL and dark/light/system themes | Proven | Catalog parity tests, RTL browser journey, accessibility scans, and visual matrix |
 | Keyboard, touch-target, reduced-motion, and serious/critical axe checks | Proven | Accessibility and primitive browser suites; zero serious/critical findings |
-| Responsive desktop, iPhone portrait, and iPhone landscape layouts | Proven in automated profiles | 105 browser executions and reviewed screenshots in `evidence/screenshots/` |
+| Responsive desktop, iPhone portrait, and iPhone landscape layouts | Proven in automated profiles | 114 browser executions and reviewed screenshots in `evidence/screenshots/` |
 | Exact tested commit deployed by least-privilege CI | Proven by workflow regression; live run pending publication | `.github/workflows/quality.yml`, `.github/workflows/pages.yml`, `tests/site/validate-public-site.test.js` |
 | Public report hub, privacy, migration, release, and audit map | Proven | Seven validated HTML files under `site/` and machine-readable `site/evidence/results.json` |
 | No tracked local account path, email address, or credential | Proven at candidate scan | Filename-only tracked-file scan; deliberate fake-secret fixture is required by validator tests |

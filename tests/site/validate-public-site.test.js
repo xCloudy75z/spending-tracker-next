@@ -21,6 +21,12 @@ test('published site satisfies the complete report contract', async () => {
   assert.equal(result.ok, true, result.errors.join('\n'));
 });
 
+test('final audit uses the machine-readable browser execution total', async () => {
+  const results = JSON.parse(await readFile(fileURLToPath(new URL('../../site/evidence/results.json', import.meta.url)), 'utf8'));
+  const audit = await readFile(fileURLToPath(new URL('../../evidence/final-audit.md', import.meta.url)), 'utf8');
+  assert.match(audit, new RegExp(`${results.suites.browserExecutions} browser executions`));
+});
+
 test('Pages deploys only the exact verified artifact from a trusted main push', async () => {
   const quality = await readFile(fileURLToPath(new URL('../../.github/workflows/quality.yml', import.meta.url)), 'utf8');
   const pages = await readFile(fileURLToPath(new URL('../../.github/workflows/pages.yml', import.meta.url)), 'utf8');
