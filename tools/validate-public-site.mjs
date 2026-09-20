@@ -4,6 +4,8 @@ import { pathToFileURL } from 'node:url';
 
 const LINK_PATTERN = /\b(?:href|src)\s*=\s*["']([^"']+)["']/gi;
 const WINDOWS_PATH_PATTERN = /(?:[A-Za-z]:\\(?:Users|Documents|Desktop)\\|file:\/\/)/i;
+const SECRET_PATTERN = /(?:ghp_[A-Za-z0-9]{20,}|github_pat_[A-Za-z0-9_]{20,}|sk-[A-Za-z0-9]{20,})/;
+const EXTERNAL_RUNTIME_PATTERN = /<(?:script|img)[^>]+src=["']https?:|<link[^>]+(?:stylesheet|icon)[^>]+href=["']https?:/i;
 
 async function listHtmlFiles(directory) {
   const entries = await readdir(directory, { withFileTypes: true });
@@ -69,7 +71,17 @@ export async function validatePublicSite(rootDir) {
     if (!/<meta\s+[^>]*name=["']viewport["'][^>]*content=["'][^"']+["'][^>]*>/i.test(html)) {
       errors.push(`${relative}: missing viewport metadata`);
     }
+    if (!/<link\s+[^>]*rel=["']canonical["'][^>]*href=["']https:\/\/[^"']+["'][^>]*>/i.test(html)) errors.push(`${relative}: missing canonical URL`);
     if (WINDOWS_PATH_PATTERN.test(html)) errors.push(`${relative}: contains a local filesystem path`);
+    if (SECRET_PATTERN.test(html)) errors.push(`${relative}: contains a secret-like token`);
+    if (EXTERNAL_RUNTIME_PATTERN.test(html)) errors.push(`${relative}: contains an external runtime asset`);
+    for (const image of html.matchAll(/<img\b([^>]*)>/gi)) {
+      if (!/\balt=["'][^"']*["']/i.test(image[1])) errors.push(`${relative}: image is missing alt text`);
+    }
+    for (const anchor of html.matchAll(/<a\b([^>]*)target=["']_blank["']([^>]*)>/gi)) {
+      const attrs = anchor[1] + anchor[2];
+      if (!/\brel=["'][^"']*noopener[^"']*noreferrer[^"']*["']/i.test(attrs)) errors.push(`${relative}: target=_blank is missing rel=noopener noreferrer`);
+    }
 
     for (const match of html.matchAll(LINK_PATTERN)) {
       const reference = match[1].trim();
@@ -83,6 +95,26 @@ export async function validatePublicSite(rootDir) {
       }
       if (!target) errors.push(`${relative}: missing local target ${reference}`);
     }
+  }
+
+  const privacyFile = join(siteRoot, 'privacy', 'index.html');
+  try {
+    const privacy = await readFile(privacyFile, 'utf8');
+    if (!/local(?:-only| storage)|stays on (?:this|your) device/i.test(privacy)) errors.push('privacy/index.html: missing local-only privacy statement');
+  } catch {
+    errors.push('privacy/index.html: missing privacy page');
+  }
+
+  try {
+    const results = JSON.parse(await readFile(join(siteRoot, 'evidence', 'results.json'), 'utf8'));
+    for (const field of ['commit', 'version', 'generatedAt', 'declarationCount', 'caseCount', 'executionCount', 'suites', 'browserMatrix']) {
+      if (results[field] === undefined) errors.push(`evidence/results.json: missing ${field}`);
+    }
+    const evidenceHtml = await readFile(join(siteRoot, 'evidence', 'index.html'), 'utf8');
+    if (!evidenceHtml.includes(`data-version="${results.version}"`)) errors.push('evidence/index.html: version claim does not match results.json');
+    if (!evidenceHtml.includes(`data-executions="${results.executionCount}"`)) errors.push('evidence/index.html: execution claim does not match results.json');
+  } catch (error) {
+    errors.push(`evidence: missing or invalid machine-readable results (${error.message})`);
   }
 
   return { ok: errors.length === 0, errors, filesChecked: htmlFiles.length };

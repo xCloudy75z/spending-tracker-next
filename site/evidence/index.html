@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Read the reproducible test evidence and browser coverage for Spending Tracker version 1.0.0.">
+    <link rel="canonical" href="https://xcloudy75z.github.io/spending-tracker-next/evidence/">
+    <link rel="icon" type="image/png" href="../app/assets/icons/icon-192.png">
+    <link rel="stylesheet" href="../assets/site.css">
+    <script src="../assets/site.js" defer></script>
+    <title>Test evidence — Spending Tracker</title>
+  </head>
+  <body>
+    <a class="skip-link" href="#main-content">Skip to content</a>
+    <header class="site-header">
+      <a class="brand" href="../" aria-label="Spending Tracker home"><img src="../app/assets/brand/mark.svg" alt="" width="40" height="40"><span>Spending Tracker</span></a>
+      <nav aria-label="Main navigation"><a href="../features/">Features</a><a href="../evidence/">Test evidence</a><a href="../migrate/">Move your data</a><a href="../privacy/">Privacy</a></nav>
+      <a class="button button-small" href="../app/">Open app</a>
+    </header>
+    <main id="main-content" class="shell">
+      <section class="page-hero"><p class="eyebrow">Evidence, not promises</p><h1>Tested as a product, not just as code.</h1><p class="lede">The published build is checked from domain logic through iPhone-sized interaction, accessibility, offline behavior, backups, and public-site integrity.</p></section>
+      <section class="prose">
+        <div class="metrics" data-version="1.0.0" data-executions="163">
+          <div class="metric"><strong>103</strong><span>distinct test declarations</span></div>
+          <div class="metric"><strong>163</strong><span>total test executions</span></div>
+          <div class="metric"><strong>3</strong><span>browser/device projects</span></div>
+          <div class="metric"><strong>0</strong><span>serious or critical axe findings</span></div>
+        </div>
+        <h2>Coverage by layer</h2>
+        <div class="table-wrap"><table><thead><tr><th>Suite</th><th>Count</th><th>What it checks</th></tr></thead><tbody>
+          <tr><td>Unit</td><td>60</td><td>Dates, cycles, planning math, transaction rules, liabilities, SMS parsing, CSV, backup validation, and storage.</td></tr>
+          <tr><td>Integration</td><td>10</td><td>State transitions, persistence, restore behavior, and non-destructive error handling.</td></tr>
+          <tr><td>Site validation</td><td>3</td><td>References, canonical URLs, privacy disclosure, evidence consistency, unsafe paths, and forbidden external runtime assets.</td></tr>
+          <tr><td>Browser</td><td>30 × 3</td><td>Desktop Chromium, iPhone WebKit portrait, and iPhone WebKit landscape interaction.</td></tr>
+        </tbody></table></div>
+        <h2>Browser matrix</h2>
+        <div class="table-wrap"><table><thead><tr><th>Project</th><th>Engine / viewport</th><th>Executions</th></tr></thead><tbody>
+          <tr><td>desktop-chromium</td><td>Chromium · 1440 × 1000</td><td>30</td></tr>
+          <tr><td>iphone-webkit</td><td>WebKit · iPhone 13 portrait</td><td>30</td></tr>
+          <tr><td>iphone-landscape-webkit</td><td>WebKit · iPhone 13 landscape</td><td>30</td></tr>
+        </tbody></table></div>
+        <h2>Offline verification detail</h2>
+        <p>A cold offline reload is exercised in desktop Chromium after a successful online visit. On Windows, Playwright’s WebKit engine does not provide the same context-level offline switch; the WebKit runs instead verify the cached shell and modules, service-worker registration, offline event handling, and every application route. This limitation is stated here so the evidence is not stronger than the test.</p>
+        <h2>Reproduce it</h2>
+        <p>Install the development dependencies, then run <code>npm run verify:full</code>. The source suite and configuration are included in the repository. The structured record behind this page is available as <a href="./results.json">results.json</a>.</p>
+      </section>
+    </main>
+    <footer class="site-footer shell"><p>Spending Tracker · Verified build 1.0.0</p><nav aria-label="Footer navigation"><a href="../releases/">Releases</a><a href="../privacy/">Privacy</a><a href="../app/">Open app</a></nav></footer>
+  </body>
+</html>

@@ -3,13 +3,89 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="Spending Tracker Next is a private, offline-first daily spending companion.">
-    <title>Spending Tracker Next</title>
+    <meta name="description" content="Spending Tracker is a private, offline-first daily spending companion that keeps your records on your device.">
+    <link rel="canonical" href="https://xcloudy75z.github.io/spending-tracker-next/">
+    <link rel="icon" type="image/png" href="./app/assets/icons/icon-192.png">
+    <link rel="stylesheet" href="./assets/site.css">
+    <script src="./assets/site.js" defer></script>
+    <title>Spending Tracker — Private daily money clarity</title>
   </head>
   <body>
-    <main id="about">
-      <h1>Spending Tracker Next</h1>
-      <p>A private, offline-first daily spending companion.</p>
+    <a class="skip-link" href="#main-content">Skip to content</a>
+    <header class="site-header">
+      <a class="brand" href="./" aria-label="Spending Tracker home">
+        <img src="./app/assets/brand/mark.svg" alt="" width="40" height="40">
+        <span>Spending Tracker</span>
+      </a>
+      <nav aria-label="Main navigation">
+        <a href="./features/">Features</a>
+        <a href="./evidence/">Test evidence</a>
+        <a href="./migrate/">Move your data</a>
+        <a href="./privacy/">Privacy</a>
+      </nav>
+      <a class="button button-small" href="./app/">Open app</a>
+    </header>
+
+    <main id="main-content">
+      <section class="hero shell">
+        <div class="hero-copy">
+          <p class="eyebrow">Private by default · ready offline</p>
+          <h1>Know what is safe to spend today.</h1>
+          <p class="lede">A calm daily spending companion for your iPhone. No account, no server, no ads—just your plan and your records on your device.</p>
+          <div class="actions">
+            <a class="button" href="./app/">Launch Spending Tracker</a>
+            <a class="text-link" href="./features/">See how it works <span aria-hidden="true">→</span></a>
+          </div>
+          <ul class="trust-list" aria-label="Product guarantees">
+            <li>Works after the first visit without internet</li>
+            <li>English and Arabic, including right-to-left layout</li>
+            <li>Portable JSON backups and CSV exports</li>
+          </ul>
+        </div>
+        <figure class="phone-stage">
+          <div class="phone-frame">
+            <img src="./app/assets/screenshots/today-mobile.png" alt="Spending Tracker Today screen showing the safe-to-spend amount and quick actions">
+          </div>
+          <figcaption>A focused answer first. Detail only when you need it.</figcaption>
+        </figure>
+      </section>
+
+      <section class="fact-strip" aria-label="Key facts">
+        <div><strong>Local-first</strong><span>Your data stays on this device</span></div>
+        <div><strong>Offline-ready</strong><span>Installable from Safari</span></div>
+        <div><strong>Portable</strong><span>You own the backup file</span></div>
+      </section>
+
+      <section class="section shell split">
+        <div>
+          <p class="eyebrow">Install on iPhone</p>
+          <h2>Your tracker, one tap away.</h2>
+          <p>Open the app in Safari, tap Share, then choose <strong>Add to Home Screen</strong>. Launch it once while online so the offline copy is ready.</p>
+        </div>
+        <ol class="steps">
+          <li><span>1</span><div><strong>Open in Safari</strong><p>Use the Launch button above on your iPhone.</p></div></li>
+          <li><span>2</span><div><strong>Tap Share</strong><p>Find the square-with-arrow button in Safari.</p></div></li>
+          <li><span>3</span><div><strong>Add to Home Screen</strong><p>Confirm the name and tap Add.</p></div></li>
+        </ol>
+      </section>
+
+      <section class="section shell callout">
+        <div>
+          <p class="eyebrow">A deliberate privacy trade-off</p>
+          <h2>No cloud means no silent recovery.</h2>
+          <p>Clearing Safari website data or removing the app can erase local records. Create a JSON backup regularly and keep it somewhere you trust.</p>
+        </div>
+        <a class="button button-secondary" href="./privacy/">Read the privacy guide</a>
+      </section>
     </main>
+
+    <footer class="site-footer shell">
+      <p>Spending Tracker · Version 1.0.0</p>
+      <nav aria-label="Footer navigation">
+        <a href="./releases/">Releases</a>
+        <a href="./evidence/">Verification</a>
+        <a href="./privacy/">Privacy</a>
+      </nav>
+    </footer>
   </body>
 </html>

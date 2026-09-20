@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Move your Spending Tracker data safely using validated JSON backups and CSV exports.">
+    <link rel="canonical" href="https://xcloudy75z.github.io/spending-tracker-next/migrate/">
+    <link rel="icon" type="image/png" href="../app/assets/icons/icon-192.png">
+    <link rel="stylesheet" href="../assets/site.css">
+    <script src="../assets/site.js" defer></script>
+    <title>Move your data — Spending Tracker</title>
+  </head>
+  <body>
+    <a class="skip-link" href="#main-content">Skip to content</a>
+    <header class="site-header">
+      <a class="brand" href="../" aria-label="Spending Tracker home"><img src="../app/assets/brand/mark.svg" alt="" width="40" height="40"><span>Spending Tracker</span></a>
+      <nav aria-label="Main navigation"><a href="../features/">Features</a><a href="../evidence/">Test evidence</a><a href="../migrate/">Move your data</a><a href="../privacy/">Privacy</a></nav>
+      <a class="button button-small" href="../app/">Open app</a>
+    </header>
+    <main id="main-content" class="shell">
+      <section class="page-hero"><p class="eyebrow">Migration and recovery</p><h1>Keep control when you change devices.</h1><p class="lede">Because there is no account or cloud sync, a backup file is the bridge between browsers and phones.</p></section>
+      <article class="prose">
+        <div class="notice"><strong>Before you start:</strong> export a fresh JSON backup from the old installation. Do not clear browser data until the restored records have been checked.</div>
+        <h2>Move the complete app state</h2>
+        <ol>
+          <li>On the old device, open Settings in the app and choose <strong>Download backup</strong>.</li>
+          <li>Move the downloaded JSON file using a secure method you control.</li>
+          <li>Open Spending Tracker on the new device once while online, then add it to the home screen if desired.</li>
+          <li>Choose <strong>Restore backup</strong> and select the JSON file.</li>
+          <li>Review Today, Activity, Plan, and Cards before removing the old copy.</li>
+        </ol>
+        <h2>Restore safety</h2>
+        <p>The app validates the file structure and schema before replacing current data. An invalid or unsupported file is rejected without partially importing it. Restoring a valid backup intentionally replaces the current local app state, so create a backup of the destination first if it already contains useful records.</p>
+        <h2>CSV is for analysis, not restore</h2>
+        <p>CSV export is a human-readable transaction table for spreadsheets and archives. It does not contain the full plan, settings, cards, or metadata required for a complete restore. Use JSON for migration and disaster recovery.</p>
+        <h2>Coming from the original app</h2>
+        <p>This version uses a new, validated data model and does not silently read or delete the original app’s browser storage. Keep the original installation intact. If it can export compatible JSON, import a copy and review the result; otherwise preserve the old export as a record and start the new tracker with your current balances and plan.</p>
+      </article>
+    </main>
+    <footer class="site-footer shell"><p>Spending Tracker · Data guide</p><nav aria-label="Footer navigation"><a href="../privacy/">Privacy</a><a href="../evidence/">Verification</a><a href="../app/">Open app</a></nav></footer>
+  </body>
+</html>

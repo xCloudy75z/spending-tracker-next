@@ -1,0 +1,26 @@
+{
+  "version": "1.0.0",
+  "commit": "0e6cf1af382bd20a9345d23b5618a883207478c8",
+  "generatedAt": "2026-09-20",
+  "declarationCount": 103,
+  "caseCount": 103,
+  "executionCount": 163,
+  "suites": {
+    "unit": 60,
+    "integration": 10,
+    "site": 3,
+    "browserDeclarations": 30,
+    "browserExecutions": 90
+  },
+  "browserMatrix": [
+    { "project": "desktop-chromium", "engine": "Chromium", "viewport": "1440x1000", "declarations": 30, "executions": 30 },
+    { "project": "iphone-webkit", "engine": "WebKit", "viewport": "iPhone 13 portrait", "declarations": 30, "executions": 30 },
+    { "project": "iphone-landscape-webkit", "engine": "WebKit", "viewport": "iPhone 13 landscape", "declarations": 30, "executions": 30 }
+  ],
+  "claims": {
+    "coldOfflineReload": "Verified in desktop Chromium with network disabled after first load.",
+    "webkitOffline": "Verified cached app shell, modules, service worker registration, offline event handling, and route availability in WebKit emulation; Playwright WebKit on Windows does not expose context-level offline switching.",
+    "accessibility": "Automated axe checks report no serious or critical violations on tested screens.",
+    "storageIsolation": "The service worker cache is scoped and tested not to delete an unrelated legacy cache."
+  }
+}

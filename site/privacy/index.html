@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Understand how Spending Tracker keeps records local, works offline, and puts backup responsibility in your hands.">
+    <link rel="canonical" href="https://xcloudy75z.github.io/spending-tracker-next/privacy/">
+    <link rel="icon" type="image/png" href="../app/assets/icons/icon-192.png">
+    <link rel="stylesheet" href="../assets/site.css">
+    <script src="../assets/site.js" defer></script>
+    <title>Privacy — Spending Tracker</title>
+  </head>
+  <body>
+    <a class="skip-link" href="#main-content">Skip to content</a>
+    <header class="site-header">
+      <a class="brand" href="../" aria-label="Spending Tracker home"><img src="../app/assets/brand/mark.svg" alt="" width="40" height="40"><span>Spending Tracker</span></a>
+      <nav aria-label="Main navigation"><a href="../features/">Features</a><a href="../evidence/">Test evidence</a><a href="../migrate/">Move your data</a><a href="../privacy/">Privacy</a></nav>
+      <a class="button button-small" href="../app/">Open app</a>
+    </header>
+    <main id="main-content" class="shell">
+      <section class="page-hero"><p class="eyebrow">Privacy model</p><h1>Your records stay with you.</h1><p class="lede">Spending Tracker is deliberately local-first. It has no account system, advertising SDK, analytics tracker, or application server.</p></section>
+      <article class="prose">
+        <div class="notice"><strong>The app uses local-only browser storage.</strong> Your transactions, plan, settings, and card details stay on this device unless you explicitly export a file.</div>
+        <h2>What is stored</h2>
+        <p>The app stores the entries you create, planning values, card records, language and theme preferences, and a small schema version used to keep the data readable across app updates.</p>
+        <h2>What leaves your device</h2>
+        <p>The application does not transmit your spending data. Opening the hosted app downloads static HTML, CSS, JavaScript, icons, and other interface assets from GitHub Pages. Your financial records are not part of those requests.</p>
+        <h2>Backups are your responsibility</h2>
+        <p>Local-only storage is private, but it cannot rescue data after Safari website data is cleared, a device is lost, or the app is removed. Use the app’s JSON backup regularly. Store the file in a secure location you control and test the restore flow before depending on it.</p>
+        <h2>Shared devices</h2>
+        <p>Anyone with access to your unlocked browser profile may be able to open the app and view its locally stored data. The app does not add its own password or encryption layer.</p>
+        <h2>Deleting your data</h2>
+        <p>You can remove individual records in the app. To remove everything, clear this site’s website data in the browser. Export a backup first if you may need the records again.</p>
+        <h2>Security boundaries</h2>
+        <p>The app uses a restrictive content security policy and has no external runtime scripts. Device security, browser security, backup-file handling, and physical access remain outside the app’s control.</p>
+      </article>
+    </main>
+    <footer class="site-footer shell"><p>Spending Tracker · Privacy guide</p><nav aria-label="Footer navigation"><a href="../features/">Features</a><a href="../evidence/">Verification</a><a href="../releases/">Releases</a></nav></footer>
+  </body>
+</html>

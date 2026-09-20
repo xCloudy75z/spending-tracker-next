@@ -1,21 +1,21 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { mkdtemp, mkdir, writeFile } from 'node:fs/promises';
-import { tmpdir } from 'node:os';
-import { join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { validatePublicSite } from '../../tools/validate-public-site.mjs';
 
-test('validator rejects a broken internal link and a local Windows path', async () => {
-  const root = await mkdtemp(join(tmpdir(), 'spending-site-'));
-  await mkdir(root, { recursive: true });
-  await writeFile(
-    join(root, 'index.html'),
-    '<title>Spending Tracker Next</title><a href="./missing/">Open</a><p>C:\\Users\\owner</p>',
-  );
-
-  const result = await validatePublicSite(root);
+test('validator rejects unsafe, inaccessible, unverifiable public pages', async () => {
+  const result = await validatePublicSite(fileURLToPath(new URL('./fixtures/broken/', import.meta.url)));
 
   assert.equal(result.ok, false);
-  assert.match(result.errors.join('\n'), /missing/);
-  assert.match(result.errors.join('\n'), /local filesystem path/);
+  const errors = result.errors.join('\n');
+  for (const expected of [
+    'missing title', 'meta description', 'viewport', 'canonical', 'local filesystem path',
+    'external runtime asset', 'image is missing alt', 'target=_blank', 'secret-like token',
+    'missing privacy page', 'machine-readable results', 'missing local target',
+  ]) assert.match(errors, new RegExp(expected));
+});
+
+test('published site satisfies the complete report contract', async () => {
+  const result = await validatePublicSite(fileURLToPath(new URL('../../site/', import.meta.url)));
+  assert.equal(result.ok, true, result.errors.join('\n'));
 });
