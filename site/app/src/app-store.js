@@ -6,6 +6,8 @@ import {
   setWifeTracking,
   updateTransaction,
 } from './domain/transactions.js';
+import { addCategory, addCycle, archiveCategory, updateCategory, updateSettings } from './domain/planning.js';
+import { addWifePayment, settleBankTransaction, settleWifeTransaction } from './domain/liabilities.js';
 
 function clone(value) {
   return structuredClone(value);
@@ -29,6 +31,22 @@ function reduce(state, command, context) {
       return reassignCategory(state, command.payload.fromId, command.payload.toId);
     case 'settings/wifeTracking':
       return setWifeTracking(state, command.payload.enabled);
+    case 'settings/update':
+      return updateSettings(state, command.payload);
+    case 'category/add':
+      return addCategory(state, command.payload, context);
+    case 'category/update':
+      return updateCategory(state, command.payload.id, command.payload.patch);
+    case 'category/archive':
+      return archiveCategory(state, command.payload.id, command.payload.reassignTo);
+    case 'cycle/add':
+      return addCycle(state, command.payload, context);
+    case 'card/settle':
+      return settleBankTransaction(state, command.payload.id, command.payload.settled, context);
+    case 'wife/settle':
+      return settleWifeTransaction(state, command.payload.id, command.payload.settled, context);
+    case 'wife/payment':
+      return addWifePayment(state, command.payload, context);
     default:
       throw storeError('UNKNOWN_COMMAND', 'Unknown command: ' + command.type);
   }

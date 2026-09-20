@@ -4,9 +4,12 @@ import { t, setDocumentLocale } from './i18n.js';
 import { createClock } from './platform/clock.js';
 import { createStorage } from './platform/storage.js';
 import { createRouter, parseRoute } from './router.js';
-import { el, text } from './ui/dom.js';
+import { announce, el, text } from './ui/dom.js';
 import { createTodayViewModel, renderToday } from './ui/today.js';
 import { openTransactionDialog } from './ui/transaction-dialog.js';
+import { confirmTransactionDelete, renderActivity } from './ui/activity.js';
+import { renderPlan } from './ui/plan.js';
+import { renderCard } from './ui/card.js';
 
 export function createLifecycleController(options) {
   const eventTarget = options.eventTarget;
@@ -74,11 +77,7 @@ function renderPlaceholder(documentLike, container, route, locale, todayISO) {
   container.replaceChildren(section);
 }
 
-function renderDefaultView(documentLike, container, route, locale, todayISO, state, store, metadata = {}) {
-  if (route !== 'today') {
-    renderPlaceholder(documentLike, container, route, locale, todayISO);
-    return;
-  }
+function renderDefaultView(documentLike, container, route, locale, todayISO, state, store, metadata = {}, uiState = {}, rerender = () => {}) {
   const openEditor = (transaction, trigger) => openTransactionDialog({
     document: documentLike,
     state: store.getState(),
@@ -90,6 +89,45 @@ function renderDefaultView(documentLike, container, route, locale, todayISO, sta
       store.dispatch(command);
     },
   });
+  const dispatch = command => {
+    try {
+      store.dispatch(command);
+    } catch (error) {
+      announce(documentLike, error?.code === 'CATEGORY_IN_USE' ? 'Choose a replacement category first.' : t(locale, 'error.unknown'), 'assertive');
+    }
+  };
+  if (route === 'activity') {
+    renderActivity(container, state, {
+      locale,
+      filters: uiState.activityFilters,
+      onFilters(next) {
+        uiState.activityFilters = next;
+        rerender();
+      },
+      onEdit(id, trigger) {
+        openEditor(state.transactions[id], trigger);
+      },
+      async onDelete(id, trigger) {
+        if (await confirmTransactionDelete(documentLike, locale, state.transactions[id], trigger)) {
+          dispatch({ type: 'transaction/delete', payload: { id } });
+          announce(documentLike, t(locale, 'transaction.deleted'));
+        }
+      },
+    });
+    return;
+  }
+  if (route === 'plan') {
+    renderPlan(container, state, { locale, todayISO, metadata, onCommand: dispatch });
+    return;
+  }
+  if (route === 'card') {
+    renderCard(container, state, { locale, todayISO, onCommand: dispatch });
+    return;
+  }
+  if (route !== 'today') {
+    renderPlaceholder(documentLike, container, route, locale, todayISO);
+    return;
+  }
   const model = createTodayViewModel(state, todayISO, {
     locale,
     lastBackupAt: metadata.lastBackupAt,
@@ -160,6 +198,7 @@ export function mountApp(root, dependencies = {}) {
   let locale = initialState.settings.locale;
   let route = parseRoute(windowLike.location.hash);
   let todayISO = null;
+  const uiState = { activityFilters: {} };
   setDocumentLocale(documentLike, locale);
   documentLike.documentElement.dataset.theme = initialState.settings.theme;
 
@@ -167,8 +206,9 @@ export function mountApp(root, dependencies = {}) {
     const state = store.getState();
     locale = state.settings.locale;
     setDocumentLocale(documentLike, locale);
+    documentLike.documentElement.dataset.theme = state.settings.theme;
     updateNavigation(documentLike, route, locale);
-    (dependencies.renderView || renderDefaultView)(documentLike, view, route, locale, todayISO, state, store, metadata);
+    (dependencies.renderView || renderDefaultView)(documentLike, view, route, locale, todayISO, state, store, metadata, uiState, render);
   };
 
   const router = createRouter(windowLike, nextRoute => {

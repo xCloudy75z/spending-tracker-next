@@ -7,6 +7,16 @@ function money(value) {
   return Math.round((value + Number.EPSILON) * 100) / 100;
 }
 
+function clone(value) {
+  return structuredClone(value);
+}
+
+function liabilityError(code, message) {
+  const error = new Error(message);
+  error.code = code;
+  return error;
+}
+
 function newestFirst(left, right) {
   return String(right.date || '').localeCompare(String(left.date || ''))
     || String(right.createdAt || '').localeCompare(String(left.createdAt || ''));
@@ -40,4 +50,34 @@ export function wifeSummary(state) {
     settledPurchases,
     payments,
   };
+}
+
+export function settleBankTransaction(state, id, settled, context = {}) {
+  if (!state.transactions?.[id]?.isCredit) throw liabilityError('BANK_ITEM_NOT_FOUND', 'Card transaction not found');
+  const next = clone(state);
+  next.transactions[id].liabilitySettled = Boolean(settled);
+  next.transactions[id].settledAt = settled ? (context.nowISO || new Date().toISOString()) : null;
+  return next;
+}
+
+export function settleWifeTransaction(state, id, settled, context = {}) {
+  if (!state.transactions?.[id]?.byWife) throw liabilityError('WIFE_ITEM_NOT_FOUND', 'Reimbursement transaction not found');
+  const next = clone(state);
+  next.transactions[id].wifeSettled = Boolean(settled);
+  next.transactions[id].wifeSettledAt = settled ? (context.nowISO || new Date().toISOString()) : null;
+  return next;
+}
+
+export function addWifePayment(state, draft, context = {}) {
+  const next = clone(state);
+  const id = draft.id || (typeof context.idFactory === 'function' ? context.idFactory('wife-payment') : 'wife-payment-' + crypto.randomUUID());
+  if (next.wifePayments[id]) throw liabilityError('DUPLICATE_ID', 'Payment id already exists');
+  next.wifePayments[id] = {
+    id,
+    amount: money(Number(draft.amount)),
+    date: draft.date,
+    note: String(draft.note || ''),
+    createdAt: context.nowISO || new Date().toISOString(),
+  };
+  return next;
 }
