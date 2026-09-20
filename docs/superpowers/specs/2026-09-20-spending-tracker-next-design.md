@@ -2,7 +2,7 @@
 
 **Date:** 2026-09-20  
 **Status:** Approved for implementation  
-**Target workspace:** `C:\Users\games\Documents\ChatGPT\Spending Tracker`  
+**Target workspace:** the designated local Spending Tracker project directory  
 **Planned repository:** `spending-tracker-next`
 
 ## 1. Purpose

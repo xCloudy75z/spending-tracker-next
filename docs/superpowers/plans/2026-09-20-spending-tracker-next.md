@@ -14,7 +14,7 @@
 
 ## Global Constraints
 
-- Write or delete files only inside C:\Users\games\Documents\ChatGPT\Spending Tracker and its GitHub repository.
+- Write or delete files only inside the designated Spending Tracker project directory and its GitHub repository.
 - Read access elsewhere in Documents is allowed, but no writes outside the project.
 - Keep the existing rem-money repository and deployed application unchanged.
 - Deploy the report hub at the GitHub Pages root and the installable application under /app/.
