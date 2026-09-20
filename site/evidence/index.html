@@ -20,24 +20,24 @@
     <main id="main-content" class="shell">
       <section class="page-hero"><p class="eyebrow">Evidence, not promises</p><h1>Tested as a product, not just as code.</h1><p class="lede">The published build is checked from domain logic through iPhone-sized interaction, accessibility, offline behavior, backups, and public-site integrity.</p></section>
       <section class="prose">
-        <div class="metrics" data-version="1.0.0" data-declarations="117" data-executions="187">
-          <div class="metric"><strong data-evidence-value="declarations">117</strong><span>distinct test declarations</span></div>
-          <div class="metric"><strong data-evidence-value="executions">187</strong><span>total test executions</span></div>
+        <div class="metrics" data-version="1.0.0" data-declarations="122" data-executions="198">
+          <div class="metric"><strong data-evidence-value="declarations">122</strong><span>distinct test declarations</span></div>
+          <div class="metric"><strong data-evidence-value="executions">198</strong><span>total test executions</span></div>
           <div class="metric"><strong>3</strong><span>browser/device projects</span></div>
           <div class="metric"><strong>0</strong><span>serious or critical axe findings</span></div>
         </div>
         <h2>Coverage by layer</h2>
         <div class="table-wrap"><table><thead><tr><th>Suite</th><th>Count</th><th>What it checks</th></tr></thead><tbody>
-          <tr><td>Unit</td><td data-evidence-suite="unit">65</td><td>Dates, cycles, planning math, transaction rules, liabilities, SMS parsing, CSV, backup validation, and storage.</td></tr>
+          <tr><td>Unit</td><td data-evidence-suite="unit">67</td><td>Dates, cycles, planning math, transaction rules, liabilities, SMS parsing, CSV, backup validation, and storage.</td></tr>
           <tr><td>Integration</td><td data-evidence-suite="integration">10</td><td>State transitions, persistence, restore behavior, and non-destructive error handling.</td></tr>
           <tr><td>Site validation and accounting</td><td data-evidence-suite="site">7</td><td>References, canonical URLs, privacy disclosure, evidence consistency, unsafe paths, forbidden external runtime assets, and exact test counts.</td></tr>
-          <tr><td>Browser</td><td data-evidence-suite="browserDeclarations">35 × 3</td><td>Desktop Chromium, iPhone WebKit portrait, and iPhone WebKit landscape interaction.</td></tr>
+          <tr><td>Browser</td><td data-evidence-suite="browserDeclarations">38 × 3</td><td>Desktop Chromium, iPhone WebKit portrait, and iPhone WebKit landscape interaction.</td></tr>
         </tbody></table></div>
         <h2>Browser matrix</h2>
         <div class="table-wrap"><table><thead><tr><th>Project</th><th>Engine / viewport</th><th>Executions</th></tr></thead><tbody>
-          <tr><td>desktop-chromium</td><td>Chromium · 1440 × 1000</td><td data-evidence-project="desktop-chromium">35</td></tr>
-          <tr><td>iphone-webkit</td><td>WebKit · iPhone 13 portrait</td><td data-evidence-project="iphone-webkit">35</td></tr>
-          <tr><td>iphone-landscape-webkit</td><td>WebKit · iPhone 13 landscape</td><td data-evidence-project="iphone-landscape-webkit">35</td></tr>
+          <tr><td>desktop-chromium</td><td>Chromium · 1440 × 1000</td><td data-evidence-project="desktop-chromium">38</td></tr>
+          <tr><td>iphone-webkit</td><td>WebKit · iPhone 13 portrait</td><td data-evidence-project="iphone-webkit">38</td></tr>
+          <tr><td>iphone-landscape-webkit</td><td>WebKit · iPhone 13 landscape</td><td data-evidence-project="iphone-landscape-webkit">38</td></tr>
         </tbody></table></div>
         <h2>Offline verification detail</h2>
         <p>A cold offline reload is exercised in desktop Chromium after a successful online visit. On Windows, Playwright’s WebKit engine does not provide the same context-level offline switch; the WebKit runs instead verify the cached shell and modules, service-worker registration, offline event handling, and every application route. This limitation is stated here so the evidence is not stronger than the test.</p>
@@ -47,7 +47,7 @@
           <tr><td>Local data could be lost or partially restored</td><td>Writes roll back on failure, a snapshot can recover corruption, and restore replaces data only after full validation and preview.</td><td>Storage, backup, restore-transaction, corrupt-storage, and import/export tests.</td></tr>
           <tr><td>Card and reimbursement totals could be coupled</td><td>Bank liability and wife reimbursement ledgers are calculated independently; overpayment and double settlement are rejected.</td><td>Liability unit tests and Card browser journeys.</td></tr>
           <tr><td>Imported content could become executable or unsafe in spreadsheets</td><td>UI text nodes never inject HTML, CSP blocks external runtime code, and CSV neutralizes formulas.</td><td>DOM primitive, backup adversarial, CSV, and CSP validation tests.</td></tr>
-          <tr><td>Offline updates could damage another app on the same origin</td><td>The worker is scoped to <code>/app/</code> and deletes only caches with its own product prefix.</td><td>PWA unit/browser isolation test and desktop cold-offline reload.</td></tr>
+          <tr><td>Offline updates could fail or damage another app on the same origin</td><td>The worker is scoped to <code>/app/</code>, deletes only its own cache prefix, retains v1 after an interrupted install, and activates a waiting v2 only after explicit consent.</td><td>PWA unit/browser isolation and staged-upgrade tests plus desktop cold-offline reload.</td></tr>
           <tr><td>Mobile, Arabic, keyboard, and assistive use were unproven</td><td>Responsive layouts, RTL, focus restoration, touch targets, and reduced motion are part of the release suite.</td><td>Desktop Chromium plus iPhone WebKit portrait/landscape and axe scans.</td></tr>
           <tr><td>Published claims could drift from tested code</td><td>Native and browser reporters generate the evidence JSON; Pages deploys that exact successful Quality artifact.</td><td>Accounting regressions, site validator, and trusted-workflow tests.</td></tr>
         </tbody></table></div>

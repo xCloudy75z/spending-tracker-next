@@ -1,44 +1,45 @@
 {
   "version": "1.0.0",
-  "commit": "cefa145781a3e8de4d91dae22307f6c948f28510",
-  "generatedAt": "2026-09-20T12:26:54.424Z",
-  "declarationCount": 117,
-  "caseCount": 117,
-  "executionCount": 187,
+  "commit": "ed97d85149ac246c0c094baa1e24a1e24653d913",
+  "generatedAt": "2026-09-20T12:44:02.743Z",
+  "declarationCount": 122,
+  "caseCount": 122,
+  "executionCount": 198,
   "suites": {
-    "unit": 65,
+    "unit": 67,
     "integration": 10,
     "site": 7,
-    "browserDeclarations": 35,
-    "browserExecutions": 105
+    "browserDeclarations": 38,
+    "browserExecutions": 114
   },
   "browserMatrix": [
     {
       "project": "desktop-chromium",
       "engine": "Chromium",
       "viewport": "1440x1000",
-      "declarations": 35,
-      "executions": 35
+      "declarations": 38,
+      "executions": 38
     },
     {
       "project": "iphone-webkit",
       "engine": "WebKit",
       "viewport": "iPhone 13 portrait",
-      "declarations": 35,
-      "executions": 35
+      "declarations": 38,
+      "executions": 38
     },
     {
       "project": "iphone-landscape-webkit",
       "engine": "WebKit",
       "viewport": "iPhone 13 landscape",
-      "declarations": 35,
-      "executions": 35
+      "declarations": 38,
+      "executions": 38
     }
   ],
   "claims": {
     "coldOfflineReload": "Verified in desktop Chromium with network disabled after first load.",
     "webkitOffline": "Verified cached app shell, modules, service worker registration, offline event handling, and route availability in WebKit emulation; Playwright WebKit on Windows does not expose context-level offline switching.",
     "accessibility": "Automated axe checks report no serious or critical violations on tested screens.",
-    "storageIsolation": "The service worker cache is scoped and tested not to delete an unrelated legacy cache."
+    "storageIsolation": "The service worker cache is scoped and tested not to delete an unrelated legacy cache.",
+    "stagedUpgrade": "An interrupted worker install retains the active v1 worker; v2 waits and activates only after an explicit update message."
   }
 }
