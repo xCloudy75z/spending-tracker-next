@@ -13,8 +13,8 @@
     "test:integration": "node --test \"tests/integration/**/*.test.js\"",
     "test:site": "node --test \"tests/site/**/*.test.js\"",
     "test:browser": "playwright test",
-    "test": "npm run test:site",
+    "test": "npm run test:unit && npm run test:integration && npm run test:site",
     "icons": "node tools/generate-icons.mjs",
-    "verify": "npm run test:site && npm run validate:site"
+    "verify": "npm test && npm run validate:site"
   }
 }
