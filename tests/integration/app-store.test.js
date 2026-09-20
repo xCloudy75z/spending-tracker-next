@@ -1,0 +1,86 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import { createAppStore } from '../../site/app/src/app-store.js';
+import { createEmptyState } from '../../site/app/src/domain/model.js';
+
+function readyState() {
+  const state = createEmptyState();
+  state.categories.food = {
+    id: 'food', name: 'Food', icon: 'x', color: '#112233', order: 0,
+    isArchived: false, budget: 0, budgetPeriod: 'monthly',
+  };
+  state.cycles.c1 = { id: 'c1', startDate: '2026-09-01', endDate: '2026-09-30', startBudget: 1000 };
+  state.settings.activeCycleId = 'c1';
+  return state;
+}
+
+test('dispatch persists once and notifies only after a successful save', () => {
+  let saves = 0;
+  let notifications = 0;
+  const persist = { save() { saves += 1; } };
+  const store = createAppStore({
+    initialState: readyState(),
+    persist,
+    context: { idFactory: () => 't1', nowISO: '2026-09-20T12:00:00.000+04:00' },
+  });
+  store.subscribe(() => { notifications += 1; });
+  store.dispatch({
+    type: 'transaction/add',
+    submissionId: 'submit-1',
+    payload: { date: '2026-09-20', categoryId: 'food', amount: 10 },
+  });
+  assert.equal(saves, 1);
+  assert.equal(notifications, 1);
+  assert.equal(store.getState().transactions.t1.amount, 10);
+});
+
+test('failed persistence and re-entrant dispatch leave state unchanged', () => {
+  const initialState = readyState();
+  const failing = createAppStore({
+    initialState,
+    persist: { save() { throw new Error('disk failed'); } },
+    context: { idFactory: () => 't1', nowISO: '2026-09-20T12:00:00.000+04:00' },
+  });
+  assert.throws(() => failing.dispatch({
+    type: 'transaction/add',
+    payload: { date: '2026-09-20', categoryId: 'food', amount: 10 },
+  }), /disk failed/);
+  assert.deepEqual(failing.getState(), initialState);
+
+  const reentrant = createAppStore({
+    initialState,
+    persist: { save() {} },
+    context: { idFactory: prefix => prefix + '-1', nowISO: '2026-09-20T12:00:00.000+04:00' },
+  });
+  let nestedError;
+  reentrant.subscribe(() => {
+    try {
+      reentrant.dispatch({ type: 'settings/wifeTracking', payload: { enabled: false } });
+    } catch (error) {
+      nestedError = error;
+    }
+  });
+  reentrant.dispatch({ type: 'settings/wifeTracking', payload: { enabled: true } });
+  assert.equal(nestedError.code, 'REENTRANT_DISPATCH');
+});
+
+test('duplicate submission IDs are rejected for ten seconds', () => {
+  let now = 1_000;
+  let sequence = 0;
+  const store = createAppStore({
+    initialState: readyState(),
+    persist: { save() {} },
+    nowMs: () => now,
+    context: { idFactory: () => 't' + (++sequence), nowISO: '2026-09-20T12:00:00.000+04:00' },
+  });
+  const command = {
+    type: 'transaction/add',
+    submissionId: 'same-submit',
+    payload: { date: '2026-09-20', categoryId: 'food', amount: 10 },
+  };
+  store.dispatch(command);
+  assert.throws(() => store.dispatch(command), error => error.code === 'DUPLICATE_SUBMISSION');
+  now += 10_001;
+  store.dispatch(command);
+  assert.equal(Object.keys(store.getState().transactions).length, 2);
+});
